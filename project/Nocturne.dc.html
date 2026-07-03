@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;height:100%}
+  body{background:#0A0C10;color:#ECEAE3;font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  ::selection{background:rgba(232,176,96,.28)}
+  .nc-scroll::-webkit-scrollbar{width:9px;height:9px}
+  .nc-scroll::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:20px}
+  .nc-scroll::-webkit-scrollbar-track{background:transparent}
+  @keyframes ncPulse{0%,100%{opacity:1}50%{opacity:.35}}
+  @keyframes ncBlink{0%,49%{opacity:1}50%,100%{opacity:0}}
+  @keyframes ncSpin{to{transform:rotate(360deg)}}
+  @keyframes ncUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @keyframes ncGlow{0%,100%{box-shadow:0 0 0 0 rgba(232,176,96,.0)}50%{box-shadow:0 0 22px 0 rgba(232,176,96,.18)}}
+  @keyframes ncShimmer{to{background-position:200% 0}}
+  @keyframes ncStar{0%,100%{opacity:.25}50%{opacity:.9}}
+  .nc-up{animation:ncUp .5s cubic-bezier(.2,.7,.2,1) both}
+  textarea,input,button{font-family:inherit}
+  textarea:focus,input:focus{outline:none}
+</style>
+</helmet>
+
+<div style="min-height:100%;position:relative;overflow:hidden">
+
+<!-- ================= SCREEN 1 · IDEA ================= -->
+<sc-if value="{{ isIdea }}" hint-placeholder-val="{{ true }}">
+<div class="nc-scroll" style="min-height:100vh;display:flex;flex-direction:column;position:relative;overflow:hidden">
+  <div style="position:absolute;inset:0;background:radial-gradient(120% 80% at 50% -10%,rgba(232,176,96,.10),transparent 55%),radial-gradient(90% 60% at 85% 110%,rgba(127,168,232,.08),transparent 60%);pointer-events:none"></div>
+  <div style="position:absolute;top:12%;left:16%;width:3px;height:3px;border-radius:50%;background:#E8B060;animation:ncStar 3.5s ease-in-out infinite"></div>
+  <div style="position:absolute;top:22%;left:78%;width:2px;height:2px;border-radius:50%;background:#fff;animation:ncStar 4.2s ease-in-out .6s infinite"></div>
+  <div style="position:absolute;top:34%;left:40%;width:2px;height:2px;border-radius:50%;background:#7FA8E8;animation:ncStar 5s ease-in-out 1.1s infinite"></div>
+
+  <header style="position:relative;display:flex;align-items:center;justify-content:space-between;padding:26px 40px">
+    <div style="display:flex;align-items:center;gap:11px">
+      <div style="width:26px;height:26px;border-radius:50%;background:radial-gradient(circle at 32% 30%,#F2C87E,#B67A2E);box-shadow:0 0 16px rgba(232,176,96,.45)"></div>
+      <span style="font-weight:600;letter-spacing:.24em;font-size:13px">NOCTURNE</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:26px;font-size:13.5px;color:#9AA0A9">
+      <span>How it works</span><span>Live</span><span>Pricing</span>
+      <span style="color:#0A0C10;background:#ECEAE3;padding:8px 15px;border-radius:8px;font-weight:600">Sign in</span>
+    </div>
+  </header>
+
+  <main style="position:relative;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 24px 70px;text-align:center">
+    <div class="nc-up" style="display:inline-flex;align-items:center;gap:9px;padding:6px 13px;border:1px solid rgba(255,255,255,.12);border-radius:100px;font-size:12.5px;color:#C9CDD3;margin-bottom:30px">
+      <span style="width:7px;height:7px;border-radius:50%;background:#74D69E;box-shadow:0 0 10px #74D69E;animation:ncPulse 2s infinite"></span>
+      <span style="font-family:'Geist Mono',monospace">{{ liveCount }} companies running autonomously right now</span>
+    </div>
+    <h1 class="nc-up" style="font-family:'Instrument Serif',serif;font-weight:400;font-size:74px;line-height:1.02;letter-spacing:-.01em;margin:0 0 20px;max-width:900px">
+      Describe a business tonight.<br><span style="font-style:italic;color:#E8B060">Wake up to a company.</span>
+    </h1>
+    <p class="nc-up" style="font-size:18px;line-height:1.5;color:#9AA0A9;max-width:600px;margin:0 0 40px">
+      Nocturne is an AI co-founder that plans, builds, launches and runs your business — then reports back every morning. No team. No code. You bring the idea.
+    </p>
+
+    <div class="nc-up" style="width:100%;max-width:640px;text-align:left">
+      <div style="background:#12151B;border:1px solid rgba(255,255,255,.10);border-radius:16px;padding:6px;box-shadow:0 30px 80px -30px rgba(0,0,0,.8)">
+        <textarea rows="3" value="{{ idea }}" onInput="{{ onIdea }}" placeholder="A subscription box for single-origin coffee, aimed at remote workers who miss café culture…" style="width:100%;resize:none;border:none;background:transparent;color:#ECEAE3;font-size:16.5px;line-height:1.5;padding:16px 16px 8px"></textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px 10px">
+          <button onClick="{{ surprise }}" style="display:flex;align-items:center;gap:7px;background:transparent;border:1px solid rgba(255,255,255,.12);color:#C9CDD3;font-size:13px;padding:8px 13px;border-radius:9px;cursor:pointer">✦ Surprise me</button>
+          <button onClick="{{ build }}" style="display:flex;align-items:center;gap:8px;background:#E8B060;color:#1A1206;font-weight:600;font-size:14.5px;padding:11px 20px;border-radius:10px;border:none;cursor:pointer;box-shadow:0 8px 24px -8px rgba(232,176,96,.6)">Build my company →</button>
+        </div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:16px">
+        <sc-for list="{{ examples }}" as="ex" hint-placeholder-count="4">
+          <button onClick="{{ ex.pick }}" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);color:#9AA0A9;font-size:12.5px;padding:7px 12px;border-radius:100px;cursor:pointer">{{ ex.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+
+    <div class="nc-up" style="margin-top:46px;display:flex;align-items:center;gap:20px;font-size:12.5px;color:#656B75;font-family:'Geist Mono',monospace">
+      <span>Free to start · no card</span><span style="opacity:.4">•</span><span>$49/mo per company</span><span style="opacity:.4">•</span><span>+20% revenue share — we only win when you win</span>
+    </div>
+  </main>
+</div>
+</sc-if>
+
+<!-- ================= SCREEN 2 · BUILDING ================= -->
+<sc-if value="{{ isBuilding }}" hint-placeholder-val="{{ false }}">
+<div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px;position:relative;overflow:hidden">
+  <div style="position:absolute;inset:0;background:radial-gradient(90% 70% at 50% 40%,rgba(232,176,96,.10),transparent 60%);pointer-events:none"></div>
+  <div style="position:relative;text-align:center;margin-bottom:38px">
+    <div style="width:64px;height:64px;margin:0 auto 24px;border-radius:50%;background:radial-gradient(circle at 32% 30%,#F2C87E,#B67A2E);box-shadow:0 0 40px rgba(232,176,96,.5);animation:ncGlow 2.4s ease-in-out infinite"></div>
+    <div style="font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:.2em;color:#E8B060;margin-bottom:10px">ASSEMBLING YOUR COMPANY</div>
+    <h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:42px;margin:0">{{ business.name }}</h2>
+    <p style="color:#9AA0A9;font-size:15px;margin:8px 0 0;max-width:460px">{{ business.tagline }}</p>
+  </div>
+
+  <div style="position:relative;width:100%;max-width:440px">
+    <sc-for list="{{ buildSteps }}" as="s" hint-placeholder-count="7">
+      <div style="display:flex;align-items:center;gap:14px;padding:11px 4px;opacity:{{ s.opacity }};transition:opacity .4s">
+        <div style="flex:none;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1.5px solid {{ s.ring }};background:{{ s.fill }}">
+          <span style="font-size:12px;color:{{ s.mark }}">{{ s.icon }}</span>
+        </div>
+        <span style="font-size:14.5px;color:{{ s.textColor }}">{{ s.label }}</span>
+      </div>
+    </sc-for>
+    <div style="height:3px;border-radius:100px;background:rgba(255,255,255,.08);margin-top:20px;overflow:hidden">
+      <div style="height:100%;width:{{ buildPct }}%;background:linear-gradient(90deg,#B67A2E,#F2C87E);transition:width .6s ease;border-radius:100px"></div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- ================= SCREEN 3 · APP ================= -->
+<sc-if value="{{ isApp }}" hint-placeholder-val="{{ false }}">
+<div style="display:grid;grid-template-columns:230px 1fr;height:100vh;overflow:hidden">
+
+  <!-- Sidebar -->
+  <aside style="background:#0C0F14;border-right:1px solid rgba(255,255,255,.07);display:flex;flex-direction:column;padding:20px 14px">
+    <div style="display:flex;align-items:center;gap:10px;padding:4px 8px 20px">
+      <div style="width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 32% 30%,#F2C87E,#B67A2E);box-shadow:0 0 12px rgba(232,176,96,.4)"></div>
+      <span style="font-weight:600;letter-spacing:.2em;font-size:12px">NOCTURNE</span>
+    </div>
+
+    <div style="background:#14181F;border:1px solid rgba(255,255,255,.08);border-radius:11px;padding:11px 12px;margin-bottom:18px">
+      <div style="font-size:10px;letter-spacing:.14em;color:#656B75;margin-bottom:5px;font-family:'Geist Mono',monospace">ACTIVE COMPANY</div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-weight:600;font-size:13.5px">{{ business.name }}</span>
+        <span style="color:#656B75;font-size:12px">⌄</span>
+      </div>
+    </div>
+
+    <nav style="display:flex;flex-direction:column;gap:2px">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="4">
+        <button onClick="{{ t.go }}" style="display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:9px;border:none;cursor:pointer;text-align:left;font-size:13.5px;font-weight:{{ t.weight }};background:{{ t.bg }};color:{{ t.color }}">
+          <span style="width:16px;display:inline-block;text-align:center">{{ t.icon }}</span>{{ t.label }}
+        </button>
+      </sc-for>
+    </nav>
+
+    <div style="margin-top:auto;background:linear-gradient(160deg,rgba(232,176,96,.10),rgba(127,168,232,.06));border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:13px">
+      <div style="display:flex;align-items:center;gap:7px;font-size:11px;color:#E8B060;font-family:'Geist Mono',monospace;margin-bottom:6px">
+        <span style="width:6px;height:6px;border-radius:50%;background:#E8B060;animation:ncPulse 2s infinite"></span>NEXT NIGHT CYCLE
+      </div>
+      <div style="font-family:'Instrument Serif',serif;font-size:26px;line-height:1">{{ cycleCountdown }}</div>
+      <div style="font-size:11.5px;color:#9AA0A9;margin-top:3px">1 autonomous task included tonight</div>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:9px;padding:12px 6px 2px;margin-top:12px;border-top:1px solid rgba(255,255,255,.06)">
+      <div style="width:26px;height:26px;border-radius:50%;background:#2A3038;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600">Y</div>
+      <div style="line-height:1.2"><div style="font-size:12.5px;font-weight:500">You (Founder)</div><div style="font-size:11px;color:#656B75">Starter plan</div></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div style="display:flex;flex-direction:column;height:100vh;overflow:hidden;background:#0A0C10;min-width:0">
+    <!-- topbar -->
+    <header style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:16px 26px;border-bottom:1px solid rgba(255,255,255,.07)">
+      <div>
+        <div style="display:flex;align-items:center;gap:11px">
+          <h1 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:25px;margin:0">{{ business.name }}</h1>
+          <span style="display:inline-flex;align-items:center;gap:6px;font-size:11px;color:#74D69E;background:rgba(116,214,158,.12);padding:4px 9px;border-radius:100px;font-family:'Geist Mono',monospace">
+            <span style="width:6px;height:6px;border-radius:50%;background:#74D69E;box-shadow:0 0 8px #74D69E;animation:ncPulse 2s infinite"></span>LIVE
+          </span>
+        </div>
+        <div style="font-size:12.5px;color:#656B75;margin-top:3px">{{ business.domain }} · {{ business.category }}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <button style="background:transparent;border:1px solid rgba(255,255,255,.12);color:#C9CDD3;font-size:13px;padding:9px 14px;border-radius:9px;cursor:pointer">Visit site ↗</button>
+        <button onClick="{{ toggleChat }}" style="display:flex;align-items:center;gap:8px;background:#E8B060;color:#1A1206;font-weight:600;font-size:13.5px;padding:9px 15px;border-radius:9px;border:none;cursor:pointer">◐ Ask your co-founder</button>
+      </div>
+    </header>
+
+    <!-- scroll area -->
+    <div class="nc-scroll" style="flex:1;overflow-y:auto;padding:26px 26px 60px">
+
+      <!-- OVERVIEW -->
+      <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+      <div class="nc-up">
+        <!-- morning report -->
+        <div style="background:linear-gradient(135deg,#1A1408 0%,#12151B 46%);border:1px solid rgba(232,176,96,.22);border-radius:16px;padding:22px 24px;margin-bottom:22px;position:relative;overflow:hidden">
+          <div style="position:absolute;top:-40px;right:-20px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(232,176,96,.18),transparent 70%)"></div>
+          <div style="position:relative;display:flex;align-items:center;gap:9px;margin-bottom:14px">
+            <span style="font-size:11px;letter-spacing:.16em;color:#E8B060;font-family:'Geist Mono',monospace">◑ MORNING REPORT · {{ today }}</span>
+          </div>
+          <h2 style="position:relative;font-family:'Instrument Serif',serif;font-weight:400;font-size:27px;margin:0 0 4px">While you slept, {{ reportCount }} things happened.</h2>
+          <p style="position:relative;color:#9AA0A9;font-size:14px;margin:0 0 18px;max-width:640px">Your agent team ran a full autonomous cycle at 03:00. Here's what changed — review and approve, or let it keep going.</p>
+          <div style="position:relative;display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ report }}" as="r" hint-placeholder-count="3">
+              <div style="display:flex;align-items:flex-start;gap:13px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:13px 15px">
+                <div style="flex:none;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:{{ r.tintBg }};font-size:15px">{{ r.icon }}</div>
+                <div style="flex:1">
+                  <div style="font-size:14px;font-weight:500">{{ r.title }}</div>
+                  <div style="font-size:12.5px;color:#9AA0A9;margin-top:2px">{{ r.detail }}</div>
+                </div>
+                <span style="flex:none;font-size:11px;color:{{ r.tagColor }};background:{{ r.tagBg }};padding:4px 9px;border-radius:100px;font-family:'Geist Mono',monospace;white-space:nowrap">{{ r.tag }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- metrics -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px">
+          <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="4">
+            <div style="background:#12151B;border:1px solid rgba(255,255,255,.07);border-radius:13px;padding:16px 17px">
+              <div style="font-size:11.5px;color:#9AA0A9">{{ m.label }}</div>
+              <div style="font-family:'Instrument Serif',serif;font-size:32px;line-height:1.1;margin:6px 0 2px">{{ m.value }}</div>
+              <div style="font-size:11.5px;color:{{ m.deltaColor }};font-family:'Geist Mono',monospace">{{ m.delta }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1.25fr 1fr;gap:18px">
+          <!-- agent stream -->
+          <div style="background:#0C0F14;border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.06)">
+              <span style="font-size:13px;font-weight:600">Live agent activity</span>
+              <span style="font-size:11px;color:#74D69E;font-family:'Geist Mono',monospace">● streaming</span>
+            </div>
+            <div class="nc-scroll" style="max-height:340px;overflow-y:auto;padding:6px 0">
+              <sc-for list="{{ stream }}" as="e" hint-placeholder-count="6">
+                <div style="display:flex;gap:11px;padding:9px 16px;font-family:'Geist Mono',monospace">
+                  <span style="flex:none;color:#565C66;font-size:11px;padding-top:2px">{{ e.time }}</span>
+                  <div style="flex:1;min-width:0">
+                    <span style="font-size:11.5px;font-weight:500;color:{{ e.color }}">{{ e.agent }}</span>
+                    <span style="font-size:12.5px;color:#C4C9D0;font-family:'Geist',sans-serif"> {{ e.text }}</span>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <!-- roadmap -->
+          <div style="background:#12151B;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px 17px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:14px">This week's roadmap</div>
+            <div style="display:flex;flex-direction:column;gap:11px">
+              <sc-for list="{{ tasks }}" as="tk" hint-placeholder-count="4">
+                <div style="display:flex;align-items:flex-start;gap:11px">
+                  <span style="flex:none;margin-top:1px;width:16px;height:16px;border-radius:5px;border:1.5px solid {{ tk.ring }};background:{{ tk.fill }};display:flex;align-items:center;justify-content:center;font-size:10px;color:#1A1206">{{ tk.check }}</span>
+                  <div style="flex:1">
+                    <div style="font-size:13px;color:{{ tk.textColor }};line-height:1.35">{{ tk.label }}</div>
+                    <div style="font-size:11px;color:#656B75;font-family:'Geist Mono',monospace;margin-top:2px">{{ tk.meta }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- AGENTS -->
+      <sc-if value="{{ isAgents }}" hint-placeholder-val="{{ false }}">
+      <div class="nc-up">
+        <p style="color:#9AA0A9;font-size:14px;margin:0 0 18px;max-width:640px">Your company runs on a network of specialized agents that share memory and work around the clock. Tap any agent to see what it's doing right now.</p>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px">
+          <sc-for list="{{ agents }}" as="a" hint-placeholder-count="6">
+            <div style="background:#12151B;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:17px 18px">
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+                <div style="display:flex;align-items:center;gap:11px">
+                  <div style="width:38px;height:38px;border-radius:10px;background:{{ a.tint }};display:flex;align-items:center;justify-content:center;font-size:18px">{{ a.icon }}</div>
+                  <div><div style="font-size:14.5px;font-weight:600">{{ a.name }}</div><div style="font-size:11.5px;color:#9AA0A9">{{ a.role }}</div></div>
+                </div>
+                <span style="display:inline-flex;align-items:center;gap:6px;font-size:10.5px;color:{{ a.statusColor }};background:{{ a.statusBg }};padding:4px 9px;border-radius:100px;font-family:'Geist Mono',monospace"><span style="width:5px;height:5px;border-radius:50%;background:{{ a.statusColor }}"></span>{{ a.status }}</span>
+              </div>
+              <div style="font-size:12.5px;color:#C4C9D0;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.05);border-radius:9px;padding:10px 12px;line-height:1.4">{{ a.task }}</div>
+              <div style="display:flex;gap:16px;margin-top:12px;font-family:'Geist Mono',monospace;font-size:11px;color:#656B75">
+                <span>{{ a.stat1 }}</span><span>{{ a.stat2 }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- GROWTH -->
+      <sc-if value="{{ isGrowth }}" hint-placeholder-val="{{ false }}">
+      <div class="nc-up">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:20px">
+          <div style="background:#12151B;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px 20px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:4px">Acquisition funnel · last 7 days</div>
+            <div style="font-size:12px;color:#9AA0A9;margin-bottom:18px">Autonomously driven by ads, SEO content & outbound</div>
+            <sc-for list="{{ funnel }}" as="f" hint-placeholder-count="4">
+              <div style="margin-bottom:13px">
+                <div style="display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:5px"><span style="color:#C4C9D0">{{ f.label }}</span><span style="font-family:'Geist Mono',monospace;color:#ECEAE3">{{ f.value }}</span></div>
+                <div style="height:8px;background:rgba(255,255,255,.05);border-radius:100px;overflow:hidden"><div style="height:100%;width:{{ f.pct }}%;background:linear-gradient(90deg,#B67A2E,#F2C87E);border-radius:100px"></div></div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="background:#12151B;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px 20px">
+            <div style="font-size:13px;font-weight:600;margin-bottom:14px">Active campaigns</div>
+            <div style="display:flex;flex-direction:column;gap:11px">
+              <sc-for list="{{ campaigns }}" as="c" hint-placeholder-count="3">
+                <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:11px 13px">
+                  <div><div style="font-size:13px;font-weight:500">{{ c.name }}</div><div style="font-size:11px;color:#656B75;font-family:'Geist Mono',monospace;margin-top:2px">{{ c.channel }}</div></div>
+                  <div style="text-align:right"><div style="font-size:13px;font-family:'Geist Mono',monospace;color:{{ c.roasColor }}">{{ c.roas }}</div><div style="font-size:10.5px;color:#656B75">{{ c.spend }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <div style="background:linear-gradient(135deg,rgba(127,168,232,.10),#12151B);border:1px solid rgba(127,168,232,.2);border-radius:14px;padding:16px 20px;display:flex;align-items:center;gap:14px">
+          <div style="font-size:22px">✎</div>
+          <div style="flex:1"><div style="font-size:13.5px;font-weight:500">Marketer drafted 3 new ad creatives overnight</div><div style="font-size:12px;color:#9AA0A9;margin-top:2px">Waiting on your approval before spend begins. Est. daily budget $18.</div></div>
+          <button style="background:#7FA8E8;color:#0A0C10;font-weight:600;font-size:13px;padding:9px 16px;border-radius:9px;border:none;cursor:pointer">Review</button>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- MONEY -->
+      <sc-if value="{{ isMoney }}" hint-placeholder-val="{{ false }}">
+      <div class="nc-up">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px">
+          <div style="background:linear-gradient(135deg,#14200F,#12151B);border:1px solid rgba(116,214,158,.2);border-radius:14px;padding:18px 20px">
+            <div style="font-size:12px;color:#9AA0A9">Monthly recurring revenue</div>
+            <div style="font-family:'Instrument Serif',serif;font-size:38px;margin:6px 0 2px">{{ money.mrr }}</div>
+            <div style="font-size:12px;color:#74D69E;font-family:'Geist Mono',monospace">{{ money.mrrDelta }}</div>
+          </div>
+          <div style="background:#12151B;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px 20px">
+            <div style="font-size:12px;color:#9AA0A9">Revenue this month</div>
+            <div style="font-family:'Instrument Serif',serif;font-size:38px;margin:6px 0 2px">{{ money.revenue }}</div>
+            <div style="font-size:12px;color:#9AA0A9;font-family:'Geist Mono',monospace">{{ money.orders }} orders via Stripe</div>
+          </div>
+          <div style="background:#12151B;border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px 20px">
+            <div style="font-size:12px;color:#9AA0A9">Nocturne's share (20%)</div>
+            <div style="font-family:'Instrument Serif',serif;font-size:38px;margin:6px 0 2px;color:#E8B060">{{ money.share }}</div>
+            <div style="font-size:12px;color:#9AA0A9;font-family:'Geist Mono',monospace">You keep {{ money.keep }}</div>
+          </div>
+        </div>
+        <div style="background:#12151B;border:1px solid rgba(255,255,255,.07);border-radius:14px;overflow:hidden">
+          <div style="padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;font-weight:600">Recent transactions</div>
+          <sc-for list="{{ transactions }}" as="t" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 18px;border-bottom:1px solid rgba(255,255,255,.04)">
+              <div style="display:flex;align-items:center;gap:12px">
+                <div style="width:30px;height:30px;border-radius:8px;background:rgba(116,214,158,.12);display:flex;align-items:center;justify-content:center;font-size:13px">↘</div>
+                <div><div style="font-size:13px">{{ t.label }}</div><div style="font-size:11px;color:#656B75;font-family:'Geist Mono',monospace">{{ t.time }}</div></div>
+              </div>
+              <span style="font-family:'Geist Mono',monospace;font-size:13.5px;color:#74D69E">{{ t.amount }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+    </div>
+  </div>
+
+  <!-- CO-FOUNDER CHAT -->
+  <sc-if value="{{ chatOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;top:0;right:0;height:100vh;width:400px;background:#0C0F14;border-left:1px solid rgba(255,255,255,.1);box-shadow:-30px 0 80px -20px rgba(0,0,0,.7);display:flex;flex-direction:column;z-index:50;animation:ncUp .35s ease">
+    <div style="flex:none;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.07)">
+      <div style="display:flex;align-items:center;gap:11px">
+        <div style="width:32px;height:32px;border-radius:50%;background:radial-gradient(circle at 32% 30%,#F2C87E,#B67A2E);box-shadow:0 0 14px rgba(232,176,96,.4)"></div>
+        <div><div style="font-size:13.5px;font-weight:600">Your AI co-founder</div><div style="font-size:11px;color:#74D69E;font-family:'Geist Mono',monospace">● online · runs {{ business.name }}</div></div>
+      </div>
+      <button onClick="{{ toggleChat }}" style="background:transparent;border:none;color:#9AA0A9;font-size:20px;cursor:pointer;line-height:1">×</button>
+    </div>
+    <div class="nc-scroll" ref="{{ chatScrollRef }}" style="flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:14px">
+      <sc-for list="{{ chatMessages }}" as="msg" hint-placeholder-count="2">
+        <div style="align-self:{{ msg.align }};max-width:86%">
+          <div style="font-size:10px;color:#656B75;font-family:'Geist Mono',monospace;margin-bottom:4px;text-align:{{ msg.textAlign }}">{{ msg.who }}</div>
+          <div style="background:{{ msg.bg }};color:{{ msg.color }};border:1px solid {{ msg.border }};border-radius:13px;padding:11px 14px;font-size:13.5px;line-height:1.5;white-space:pre-wrap">{{ msg.text }}</div>
+        </div>
+      </sc-for>
+      <sc-if value="{{ chatLoading }}" hint-placeholder-val="{{ false }}">
+        <div style="align-self:flex-start;display:flex;gap:5px;padding:12px 14px;background:#14181F;border:1px solid rgba(255,255,255,.07);border-radius:13px">
+          <span style="width:6px;height:6px;border-radius:50%;background:#E8B060;animation:ncPulse 1s infinite"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:#E8B060;animation:ncPulse 1s .2s infinite"></span>
+          <span style="width:6px;height:6px;border-radius:50%;background:#E8B060;animation:ncPulse 1s .4s infinite"></span>
+        </div>
+      </sc-if>
+    </div>
+    <div style="flex:none;padding:14px;border-top:1px solid rgba(255,255,255,.07)">
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px">
+        <sc-for list="{{ chatSuggestions }}" as="sg" hint-placeholder-count="2">
+          <button onClick="{{ sg.pick }}" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#9AA0A9;font-size:11.5px;padding:6px 10px;border-radius:100px;cursor:pointer">{{ sg.label }}</button>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:8px;align-items:flex-end;background:#14181F;border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:8px 8px 8px 12px">
+        <textarea rows="1" value="{{ chatInput }}" onInput="{{ onChatInput }}" onKeyDown="{{ onChatKey }}" placeholder="Message your co-founder…" style="flex:1;resize:none;border:none;background:transparent;color:#ECEAE3;font-size:13.5px;line-height:1.5;max-height:100px"></textarea>
+        <button onClick="{{ sendChat }}" style="flex:none;width:34px;height:34px;border-radius:9px;background:#E8B060;color:#1A1206;border:none;cursor:pointer;font-size:15px;font-weight:700">↑</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;100%&quot;,&quot;height&quot;:720}}">
+class Component extends DCLogic {
+  state = {
+    screen: 'idea',
+    idea: '',
+    buildStep: -1,
+    business: { name: 'Your company', tagline: 'Assembling the plan…', domain: '', category: '', oneLiner: '' },
+    tab: 'overview',
+    chatOpen: false,
+    chatInput: '',
+    chatMessages: [],
+    chatLoading: false,
+    tick: 0,
+  };
+
+  EXAMPLES = [
+    'A subscription box for single-origin coffee for remote workers',
+    'An app that turns your travel photos into printed hardcover books',
+    'A newsletter + shop for people restoring vintage bicycles',
+    'AI-generated bedtime stories personalized for each kid',
+  ];
+
+  BUILD_STEPS = [
+    'Analyzing your idea & sizing the market',
+    'Naming the company & securing a domain',
+    'Designing the brand & landing page',
+    'Writing the code & wiring the database',
+    'Provisioning servers, Stripe & email',
+    'Publishing the site to the web',
+    'Waking up your agent team',
+  ];
+
+  chatScrollRef = React.createRef();
+
+  componentDidMount() {
+    this._timer = setInterval(() => this.setState(s => ({ tick: s.tick + 1 })), 1000);
+  }
+  componentDidUpdate() {
+    const sig = this.state.chatMessages.length + ':' + (this.state.chatLoading ? 1 : 0);
+    if (sig !== this._lastChatSig) {
+      this._lastChatSig = sig;
+      const el = this.chatScrollRef.current;
+      if (el) el.scrollTop = el.scrollHeight;
+    }
+  }
+  componentWillUnmount() { clearInterval(this._timer); if (this._bt) this._bt.forEach(clearTimeout); }
+
+  // ---- flow ----
+  startBuild = () => {
+    const idea = (this.state.idea || '').trim() || this.EXAMPLES[0];
+    this.setState({ screen: 'building', buildStep: 0, idea });
+    this.generateBusiness(idea);
+    this._bt = [];
+    for (let i = 1; i <= this.BUILD_STEPS.length; i++) {
+      this._bt.push(setTimeout(() => this.setState({ buildStep: i }), i * 950));
+    }
+    this._bt.push(setTimeout(() => this.setState({ screen: 'app' }), (this.BUILD_STEPS.length + 1) * 950 + 400));
+  };
+
+  async generateBusiness(idea) {
+    const fallback = { name: 'Warmwave', tagline: 'Café-grade coffee, delivered to focused people.', domain: 'warmwave.co', category: 'DTC subscription', oneLiner: 'A single-origin coffee subscription for remote workers.' };
+    try {
+      const raw = await window.claude.complete({
+        max_tokens: 400,
+        system: 'You are a startup naming and positioning engine. Reply with ONLY minified JSON, no markdown.',
+        messages: [{ role: 'user', content: `Business idea: "${idea}". Return JSON: {"name": a short brandable company name (1-2 words, no generic words), "tagline": a punchy 6-9 word tagline, "domain": a plausible .co or .com domain for the name, "category": 2-4 word business category, "oneLiner": one sentence describing it}` }],
+      });
+      const m = raw.match(/\{[\s\S]*\}/);
+      if (m) {
+        const p = JSON.parse(m[0]);
+        this.setState({ business: { name: p.name || fallback.name, tagline: p.tagline || fallback.tagline, domain: (p.domain || fallback.domain).toLowerCase(), category: p.category || fallback.category, oneLiner: p.oneLiner || fallback.oneLiner } });
+        return;
+      }
+    } catch (e) {}
+    this.setState({ business: fallback });
+  }
+
+  // ---- helpers ----
+  two(n){ return String(n).padStart(2,'0'); }
+
+  renderVals() {
+    const s = this.state;
+    const b = s.business;
+
+    const examples = this.EXAMPLES.map((label) => ({ label: label.length > 42 ? label.slice(0,40)+'…' : label, pick: () => this.setState({ idea: label }) }));
+
+    // build steps visual
+    const buildSteps = this.BUILD_STEPS.map((label, i) => {
+      const done = i < s.buildStep;
+      const active = i === s.buildStep;
+      return {
+        label,
+        opacity: (done || active) ? 1 : 0.4,
+        ring: done ? '#74D69E' : active ? '#E8B060' : 'rgba(255,255,255,.18)',
+        fill: done ? 'rgba(116,214,158,.15)' : active ? 'rgba(232,176,96,.15)' : 'transparent',
+        mark: done ? '#74D69E' : '#E8B060',
+        icon: done ? '✓' : active ? '◐' : '',
+        textColor: (done || active) ? '#ECEAE3' : '#656B75',
+      };
+    });
+    const buildPct = Math.min(100, Math.round((s.buildStep / this.BUILD_STEPS.length) * 100));
+
+    // countdown to 03:00
+    const now = new Date();
+    const next = new Date(now); next.setHours(3,0,0,0); if (next <= now) next.setDate(next.getDate()+1);
+    let diff = Math.floor((next - now)/1000);
+    const hh = Math.floor(diff/3600); diff -= hh*3600; const mm = Math.floor(diff/60); const ss = diff - mm*60;
+    const cycleCountdown = `${this.two(hh)}:${this.two(mm)}:${this.two(ss)}`;
+    const today = now.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+
+    // tabs
+    const TABS = [ ['overview','Overview','◱'], ['agents','Agents','◇'], ['growth','Growth','↗'], ['money','Money','$'] ];
+    const tabs = TABS.map(([id,label,icon]) => {
+      const on = s.tab === id;
+      return { label, icon, go: () => this.setState({ tab: id }), bg: on ? 'rgba(232,176,96,.12)' : 'transparent', color: on ? '#E8B060' : '#9AA0A9', weight: on ? 600 : 500 };
+    });
+
+    // report
+    const report = [
+      { icon:'🚀', title:'Landing page went live', detail:`${b.domain||'your-site.co'} is now public with hero copy, pricing and a waitlist form.`, tag:'shipped', tagColor:'#74D69E', tagBg:'rgba(116,214,158,.14)', tintBg:'rgba(116,214,158,.14)' },
+      { icon:'✉', title:'First 3 waitlist signups', detail:'Outbound agent replied to each with a welcome email and a launch-week discount code.', tag:'+3 leads', tagColor:'#7FA8E8', tagBg:'rgba(127,168,232,.14)', tintBg:'rgba(127,168,232,.14)' },
+      { icon:'⚠', title:'One decision needs you', detail:'Marketer wants to start $18/day in ads. It flagged this for approval instead of spending on its own.', tag:'needs review', tagColor:'#E8B060', tagBg:'rgba(232,176,96,.16)', tintBg:'rgba(232,176,96,.16)' },
+    ];
+    const reportCount = report.length;
+
+    const metrics = [
+      { label:'Visitors (24h)', value:'214', delta:'▲ 68% vs yesterday', deltaColor:'#74D69E' },
+      { label:'Waitlist', value:'37', delta:'▲ 3 overnight', deltaColor:'#74D69E' },
+      { label:'MRR', value:'$0', delta:'launch week', deltaColor:'#9AA0A9' },
+      { label:'Tasks done', value:'11', delta:'this cycle', deltaColor:'#9AA0A9' },
+    ];
+
+    const stream = [
+      { time:'03:00', agent:'CEO', color:'#E8B060', text:'Woke up. Reviewed state: pre-revenue, launch week. Priority → ship landing page + start collecting leads.' },
+      { time:'03:04', agent:'Designer', color:'#C79BF2', text:'Generated brand palette and hero section. Handed off to Engineer.' },
+      { time:'03:19', agent:'Engineer', color:'#7FA8E8', text:`Deployed ${b.domain||'the site'} to production. Health check green.` },
+      { time:'03:41', agent:'Marketer', color:'#74D69E', text:'Wrote 3 ad creatives + 2 SEO blog drafts. Paused spend — flagged budget for founder approval.' },
+      { time:'04:02', agent:'Support', color:'#E88A7F', text:'Set up help inbox and 4 canned replies. Auto-answered 1 incoming question.' },
+      { time:'04:15', agent:'CEO', color:'#E8B060', text:'Cycle complete. Compiled morning report. Going back to sleep until 03:00 tomorrow.' },
+    ];
+
+    const mkTask = (done, active, label, meta) => ({ label, meta, textColor: done ? '#656B75' : '#ECEAE3', ring: done ? '#74D69E' : active ? '#E8B060' : 'rgba(255,255,255,.2)', fill: done ? '#74D69E' : 'transparent', check: done ? '✓' : '' });
+    const tasks = [
+      mkTask(true,false,'Launch landing page','Engineer · done'),
+      mkTask(true,false,'Set up Stripe checkout','Engineer · done'),
+      mkTask(false,true,'Run first paid ad test','Marketer · awaiting approval'),
+      mkTask(false,false,'Publish 2 SEO articles','Marketer · queued'),
+      mkTask(false,false,'Reach 100 waitlist signups','Goal · in progress'),
+    ];
+
+    const agents = [
+      { name:'Ada', role:'CEO · strategy', icon:'◐', tint:'rgba(232,176,96,.16)', status:'thinking', statusColor:'#E8B060', statusBg:'rgba(232,176,96,.14)', task:'Deciding this week\u2019s priority: push waitlist growth before adding features.', stat1:'12 decisions', stat2:'runs nightly' },
+      { name:'Kit', role:'Engineer', icon:'⌘', tint:'rgba(127,168,232,.16)', status:'idle', statusColor:'#7FA8E8', statusBg:'rgba(127,168,232,.14)', task:'Shipped landing page + Stripe. Standing by for the next build task.', stat1:'8 deploys', stat2:'0 errors' },
+      { name:'Vera', role:'Marketer', icon:'✎', tint:'rgba(116,214,158,.16)', status:'waiting', statusColor:'#E8B060', statusBg:'rgba(232,176,96,.14)', task:'3 ad creatives ready. Needs your OK to start $18/day spend.', stat1:'5 assets', stat2:'2 blogs' },
+      { name:'Nova', role:'Support', icon:'✉', tint:'rgba(232,138,127,.16)', status:'active', statusColor:'#74D69E', statusBg:'rgba(116,214,158,.14)', task:'Watching the inbox. Auto-replied to 1 question, escalated 0.', stat1:'1 reply', stat2:'<2m response' },
+      { name:'Rhea', role:'Analyst', icon:'◫', tint:'rgba(199,155,242,.16)', status:'active', statusColor:'#74D69E', statusBg:'rgba(116,214,158,.14)', task:'Tracking traffic sources. Direct + one Reddit thread driving most visits.', stat1:'214 visits', stat2:'6 sources' },
+      { name:'Milo', role:'Ops', icon:'⚙', tint:'rgba(150,160,175,.16)', status:'idle', statusColor:'#9AA0A9', statusBg:'rgba(255,255,255,.06)', task:'Servers healthy. Renewed nothing due yet. Cost so far: $0.31 today.', stat1:'99.9% up', stat2:'$0.31/day' },
+    ];
+
+    const funnel = [
+      { label:'Site visitors', value:'214', pct:100 },
+      { label:'Viewed pricing', value:'96', pct:45 },
+      { label:'Joined waitlist', value:'37', pct:17 },
+      { label:'Clicked checkout', value:'8', pct:4 },
+    ];
+    const campaigns = [
+      { name:'Launch week teaser', channel:'X / organic', roas:'—', roasColor:'#9AA0A9', spend:'$0 spend' },
+      { name:'Remote-work subreddits', channel:'Reddit / organic', roas:'strong', roasColor:'#74D69E', spend:'$0 spend' },
+      { name:'Coffee lovers lookalike', channel:'Meta Ads · draft', roas:'pending', roasColor:'#E8B060', spend:'needs approval' },
+    ];
+
+    const money = { mrr:'$0', mrrDelta:'launch week · pre-revenue', revenue:'$142', orders:'8', share:'$28', keep:'$114' };
+    const transactions = [
+      { label:'Launch-week order · Starter box', time:'today · 08:12', amount:'+$24' },
+      { label:'Launch-week order · Starter box', time:'today · 06:48', amount:'+$24' },
+      { label:'Pre-order · Annual plan', time:'yesterday · 21:03', amount:'+$58' },
+      { label:'Launch-week order · Starter box', time:'yesterday · 17:20', amount:'+$24' },
+      { label:'Tip / support the maker', time:'yesterday · 14:55', amount:'+$12' },
+    ];
+
+    // chat
+    const chatMessages = s.chatMessages.map(m => m.role === 'user'
+      ? { who:'You', text:m.content, align:'flex-end', textAlign:'right', bg:'#E8B060', color:'#1A1206', border:'transparent' }
+      : { who:'Ada · CEO', text:m.content, align:'flex-start', textAlign:'left', bg:'#14181F', color:'#ECEAE3', border:'rgba(255,255,255,.08)' });
+    const chatSuggestions = [
+      { label:'What should we do today?', pick: () => this.sendChat('What should we focus on today?') },
+      { label:'Should I approve the ads?', pick: () => this.sendChat('Should I approve the $18/day ad spend?') },
+    ];
+
+    return {
+      isIdea: s.screen === 'idea', isBuilding: s.screen === 'building', isApp: s.screen === 'app',
+      idea: s.idea, onIdea: (e) => this.setState({ idea: e.target.value }),
+      surprise: () => this.setState({ idea: this.EXAMPLES[Math.floor(Math.random()*this.EXAMPLES.length)] }),
+      build: this.startBuild, examples,
+      liveCount: (1173 + (s.tick % 7)).toLocaleString(),
+      buildSteps, buildPct, business: b,
+      tabs, cycleCountdown, today,
+      isOverview: s.tab==='overview', isAgents: s.tab==='agents', isGrowth: s.tab==='growth', isMoney: s.tab==='money',
+      report, reportCount, metrics, stream, tasks, agents, funnel, campaigns, money, transactions,
+      // chat
+      chatOpen: s.chatOpen, toggleChat: () => this.setState(st => ({ chatOpen: !st.chatOpen })),
+      chatMessages, chatLoading: s.chatLoading, chatScrollRef: this.chatScrollRef,
+      chatInput: s.chatInput, onChatInput: (e) => this.setState({ chatInput: e.target.value }),
+      onChatKey: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendChat(); } },
+      sendChat: () => this.sendChat(), chatSuggestions,
+    };
+  }
+
+  async sendChat(preset) {
+    const text = (preset != null ? preset : this.state.chatInput).trim();
+    if (!text || this.state.chatLoading) return;
+    const b = this.state.business;
+    const history = [...this.state.chatMessages, { role:'user', content:text }];
+    this.setState({ chatMessages: history, chatInput: '', chatLoading: true });
+    try {
+      const reply = await window.claude.complete({
+        max_tokens: 500,
+        system: `You are Ada, the autonomous AI CEO and co-founder running a real early-stage business called "${b.name}" (${b.oneLiner||b.category}). It is launch week: the landing page just went live at ${b.domain}, there are 37 waitlist signups, 214 visitors in 24h, $142 in early revenue and $0 MRR. Your agent team: Kit (engineer), Vera (marketer, has 3 ad creatives waiting for the founder's approval at $18/day), Nova (support), Rhea (analyst), Milo (ops). You are talking to the founder (the human owner). Be warm, sharp, concise (2-4 sentences), and decisive like a real cofounder — give a clear recommendation, push back on bad ideas, and reference the real state above. Never invent huge fake numbers. Plain text only.`,
+        messages: history.map(m => ({ role: m.role, content: m.content })),
+      });
+      this.setState(st => ({ chatMessages: [...st.chatMessages, { role:'assistant', content: reply.trim() }], chatLoading: false }));
+    } catch (e) {
+      this.setState(st => ({ chatMessages: [...st.chatMessages, { role:'assistant', content: "I hit a snag reaching my planning model just now — try again in a moment. In the meantime: our top priority this launch week is turning those 214 visitors into waitlist signups before we spend a dollar on ads." }], chatLoading: false }));
+    }
+  }
+}
+</script>
+</body>
+</html>

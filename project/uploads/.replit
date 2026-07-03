@@ -1,0 +1,20 @@
+# .replit — Replit configuration for the DIRT platform
+# Grounded in Replit docs + March 2026 production-deploy guidance.
+
+modules = ["nodejs-20"]
+run = "npm start"
+hidden = ["node_modules", ".config"]
+
+[nix]
+channel = "stable-24_05"
+
+# Map the port your server listens on (3000) to the public web port (80).
+# Without this, Replit's health check reports "an open port was not detected".
+[[ports]]
+localPort = 3000
+externalPort = 80
+
+# Production deployment settings. Autoscale = best for a variable-traffic web app.
+[deployment]
+deploymentTarget = "autoscale"
+run = ["npm", "start"]
