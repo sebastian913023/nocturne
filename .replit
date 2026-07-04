@@ -1,0 +1,17 @@
+# .replit — Replit configuration for Nocturne
+
+modules = ["nodejs-20"]
+run = "npm start"
+hidden = ["node_modules", ".config", "data"]
+
+[nix]
+channel = "stable-24_05"
+
+# Map the port the server listens on (3000) to the public web port (80).
+[[ports]]
+localPort = 3000
+externalPort = 80
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["npm", "start"]
