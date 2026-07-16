@@ -1,0 +1,27 @@
+---
+description: Project governance — mirrors AGENTS.md. Always apply.
+globs:
+alwaysApply: true
+---
+
+# Nocturne — Cursor project rules
+
+Full detail lives in `AGENTS.md` at the repo root — read it before any
+non-trivial task. This file is the short version for inline reference.
+
+- Stack: Node/Express backend (`server/`), SQLite, Stripe; vanilla
+  HTML/CSS/JS frontend (`public/`) with **no bundler** — keep it that way.
+- Never let the Anthropic or Stripe secret keys reach client-side code.
+  All third-party API calls are server-side only.
+- No comments explaining *what* code does — only non-obvious *why*.
+- No speculative abstractions, flags, or error handling for cases that
+  can't happen. Match the scope of the task, nothing more.
+- No test suite exists yet. "Done" means: server boots, `/health` is 200,
+  and the endpoints/screens you touched were actually exercised.
+- Small, scoped changes on a feature branch for anything non-trivial.
+  Don't commit directly to `main` beyond obviously-safe small fixes.
+- Never force-push, amend shared commits, or bypass hooks
+  (`--no-verify`) without the user explicitly asking.
+- Never commit secrets. `.env` stays git-ignored.
+- If a task is ambiguous, much larger than requested, or requires a
+  judgment call the user hasn't made — stop and ask, don't guess.
