@@ -2,6 +2,7 @@ const express = require('express');
 const db = require('../db');
 const { requireAuth } = require('../auth');
 const anthropic = require('../anthropic');
+const { renderAgents } = require('../seed');
 
 const router = express.Router();
 
@@ -37,9 +38,13 @@ router.post('/', requireAuth, async (req, res) => {
     .all(business.id);
 
   const money = JSON.parse(business.money_json);
-  const marketer = JSON.parse(business.agents_json).find((a) => a.key === 'marketer');
+  const agentEnabled = JSON.parse(business.agent_enabled_json);
+  const agents = renderAgents(agentEnabled, JSON.parse(business.agents_busy_json));
+  const rosterLine = agents.map((a) => `${a.name} (${a.role}${a.status === 'paused' ? ', paused by founder' : ''})`).join(', ');
+  const pendingApprovals = db.prepare("SELECT title FROM approvals WHERE business_id = ? AND status = 'pending'").all(business.id);
+  const autonomyLine = { full: 'Full autonomy (agents act without asking)', approval: 'Human in the loop (agents queue actions for approval)', paused: 'Paused (agents are not taking new actions)' }[business.autonomy] || business.autonomy;
 
-  const system = `You are Ada, the autonomous AI CEO and co-founder running a real early-stage business called "${business.name}" (${business.one_liner || business.category}). It is launch week: the landing page just went live at ${business.domain}, there are 37 waitlist signups, 214 visitors in 24h, ${money.revenue} in early revenue and ${money.mrr} MRR. Your agent team: Kit (engineer), Vera (marketer${marketer ? `, has ${marketer.stat1} ready for the founder's approval at $18/day` : ''}), Nova (support), Rhea (analyst), Milo (ops). You are talking to the founder (the human owner). Be warm, sharp, concise (2-4 sentences), and decisive like a real cofounder — give a clear recommendation, push back on bad ideas, and reference the real state above. Never invent huge fake numbers. Plain text only.`;
+  const system = `You are Ada, the autonomous AI CEO and co-founder running a real early-stage business called "${business.name}" (${business.one_liner || business.category}). It is launch week: the landing page just went live at ${business.domain}, there are 37 waitlist signups, 214 visitors in 24h, ${money.revenue} in early revenue and ${money.mrr} MRR. Autonomy mode is currently: ${autonomyLine}. Your agent team: ${rosterLine}. Pending items awaiting the founder's approval: ${pendingApprovals.length ? pendingApprovals.map((a) => a.title).join('; ') : 'none right now'}. You are talking to the founder (the human owner). Be warm, sharp, concise (2-4 sentences), and decisive like a real cofounder — give a clear recommendation, push back on bad ideas, and reference the real state above. Never invent huge fake numbers. Plain text only.`;
 
   let replyText;
   try {

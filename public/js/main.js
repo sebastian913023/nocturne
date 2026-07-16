@@ -66,14 +66,33 @@
         onToggleChat: () => { state.chatOpen = !state.chatOpen; render(); },
         onVisitSite: () => window.open(`https://${state.business.domain}`, '_blank', 'noopener'),
         onSignOut: handleSignOut,
-        onReviewAds: () => { state.chatOpen = true; render(); sendChat('Should I approve the $18/day ad spend?'); },
         onChatInput: (v) => { state.chatInput = v; },
         onChatKeyDown: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } },
         onSendChat: () => sendChat(),
         onSuggestion: (text) => sendChat(text),
         onUpgrade: handleUpgrade,
+        onSelectAutonomy: (mode) => updateBusinessSettings({ autonomy: mode }),
+        onSpendCap: (spendCap) => updateBusinessSettings({ spendCap }),
+        onSelectDigest: (digest) => updateBusinessSettings({ digest }),
+        onToggleAgent: (key, enabled) => {
+          Api.toggleAgent(key, enabled).then((data) => { state.business = data.business; render(); }).catch(reportBusinessError);
+        },
+        onApprove: (id) => decideApproval(id, 'approved'),
+        onReject: (id) => decideApproval(id, 'rejected'),
       });
     }
+  }
+
+  function updateBusinessSettings(partial) {
+    Api.updateSettings(partial).then((data) => { state.business = data.business; render(); }).catch(reportBusinessError);
+  }
+
+  function decideApproval(id, decision) {
+    Api.decideApproval(id, decision).then((data) => { state.business = data.business; render(); }).catch(reportBusinessError);
+  }
+
+  function reportBusinessError(err) {
+    alert(err.message || 'Something went wrong. Please try again.');
   }
 
   function handleSignOut() {

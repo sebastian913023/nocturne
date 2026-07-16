@@ -39,6 +39,21 @@ npm start               # http://localhost:3000
 - The 20% revenue-share line in the pricing footer is presentational; only the flat $49/mo subscription is
   actually billed through Stripe in this implementation.
 
+## v2: Approvals & Settings
+
+The app also implements the expanded v2 design handoff (`chats/` bundle update): an **Approvals** tab
+(autonomy mode — full / human-in-the-loop / paused — plus a real pending/decided queue backed by an
+`approvals` table) and a **Settings** tab (spend cap, per-agent pause/enable toggles, morning digest
+preference — all persisted per business). The agent roster matches the v2 spec: Ada (CEO), Vera (Growth
+Marketer), Sol (Sales/Outbound), Nova (Support/Retention), Rhea (Growth Analyst), Kit (Engineer). Pausing an
+agent in Settings is real and immediately reflected in the Agents tab and the co-founder chat's grounding
+context — it just doesn't yet stop a *real* external action (see "What's real vs. simulated" above; there's
+no real ad spend or outreach happening to pause in the first place).
+
+The v2 bundle's own README recommends Next.js/Postgres/Vercel as a default for teams starting from scratch;
+this implementation intentionally stayed on the already-chosen Express/SQLite/vanilla-JS stack instead of
+migrating mid-project.
+
 ## Notes
 
 - `data/nocturne.sqlite` is created on first run and is git-ignored.

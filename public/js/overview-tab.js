@@ -1,15 +1,21 @@
-// props: { business, activity, today, reportDate }
+// props: { business, activity, today, reportDate, onGoApprovals }
 function renderOverviewTab(props) {
   const b = props.business;
 
-  const reportRows = b.report.map((r) => h('div', { class: 'report-row', 'data-tone': r.tone }, [
-    h('div', { class: 'report-icon' }, r.icon),
-    h('div', { class: 'report-body' }, [
-      h('div', { class: 'report-title' }, r.title),
-      h('div', { class: 'report-detail' }, r.detail),
-    ]),
-    h('span', { class: 'report-tag' }, r.tag),
-  ]));
+  const reportRows = b.report.map((r) => {
+    const clickable = r.tone === 'review' && b.pendingCount > 0;
+    return h('div', {
+      class: 'report-row', 'data-tone': r.tone, 'data-clickable': String(clickable),
+      onClick: clickable ? props.onGoApprovals : undefined,
+    }, [
+      h('div', { class: 'report-icon' }, r.icon),
+      h('div', { class: 'report-body' }, [
+        h('div', { class: 'report-title' }, r.title),
+        h('div', { class: 'report-detail' }, r.detail),
+      ]),
+      h('span', { class: 'report-tag' }, r.tag),
+    ]);
+  });
 
   const reportCard = h('div', { class: 'report-card' }, [
     h('div', { class: 'glow' }),

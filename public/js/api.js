@@ -29,6 +29,9 @@ const Api = (() => {
     createBusiness: (idea) => request('POST', '/api/business', { idea }),
     deleteBusiness: () => request('DELETE', '/api/business'),
     runCycle: () => request('POST', '/api/business/cycle'),
+    updateSettings: (partial) => request('PATCH', '/api/business/settings', partial),
+    toggleAgent: (key, enabled) => request('PATCH', `/api/business/agents/${key}`, { enabled }),
+    decideApproval: (id, decision) => request('PATCH', `/api/business/approvals/${id}`, { decision }),
 
     getChat: () => request('GET', '/api/chat'),
     sendChat: (text) => request('POST', '/api/chat', { text }),

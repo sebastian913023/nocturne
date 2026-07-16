@@ -183,7 +183,8 @@ a{color:inherit;text-decoration:none}
 .report-card h2{position:relative;font-family:var(--serif);font-weight:400;font-size:27px;margin:0 0 4px}
 .report-card p.sub{position:relative;color:var(--muted-1);font-size:14px;margin:0 0 18px;max-width:640px}
 .report-list{position:relative;display:flex;flex-direction:column;gap:10px}
-.report-row{display:flex;align-items:flex-start;gap:13px;background:rgba(255,255,255,.03);border:1px solid var(--border-5);border-radius:11px;padding:13px 15px}
+.report-row{display:flex;align-items:flex-start;gap:13px;background:rgba(255,255,255,.03);border:1px solid var(--border-5);border-radius:11px;padding:13px 15px;cursor:default}
+.report-row[data-clickable="true"]{cursor:pointer}
 .report-icon{flex:none;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px}
 .report-row[data-tone="shipped"] .report-icon{background:rgba(116,214,158,.14)}
 .report-row[data-tone="leads"] .report-icon{background:rgba(127,168,232,.14)}
@@ -243,27 +244,29 @@ a{color:inherit;text-decoration:none}
 .agent-card-id{display:flex;align-items:center;gap:11px}
 .agent-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
 .agent-card[data-agent-key="ceo"] .agent-icon{background:rgba(232,176,96,.16)}
-.agent-card[data-agent-key="engineer"] .agent-icon{background:rgba(127,168,232,.16)}
 .agent-card[data-agent-key="marketer"] .agent-icon{background:rgba(116,214,158,.16)}
+.agent-card[data-agent-key="sales"] .agent-icon{background:rgba(127,168,232,.16)}
 .agent-card[data-agent-key="support"] .agent-icon{background:rgba(232,138,127,.16)}
 .agent-card[data-agent-key="analyst"] .agent-icon{background:rgba(199,155,242,.16)}
-.agent-card[data-agent-key="ops"] .agent-icon{background:rgba(150,160,175,.16)}
+.agent-card[data-agent-key="engineer"] .agent-icon{background:rgba(150,160,175,.16)}
+.agent-card[data-status="paused"] .agent-icon{background:rgba(255,255,255,.06) !important}
 .agent-name{font-size:14.5px;font-weight:600}
 .agent-role{font-size:11.5px;color:var(--muted-1)}
-.agent-status{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;padding:4px 9px;border-radius:100px;font-family:var(--mono)}
-.agent-status .dot{width:5px;height:5px;border-radius:50%}
-.agent-card[data-agent-key="ceo"] .agent-status{color:#E8B060;background:rgba(232,176,96,.14)}
-.agent-card[data-agent-key="ceo"] .agent-status .dot{background:#E8B060}
-.agent-card[data-agent-key="engineer"] .agent-status{color:#7FA8E8;background:rgba(127,168,232,.14)}
-.agent-card[data-agent-key="engineer"] .agent-status .dot{background:#7FA8E8}
-.agent-card[data-agent-key="marketer"] .agent-status{color:#E8B060;background:rgba(232,176,96,.14)}
-.agent-card[data-agent-key="marketer"] .agent-status .dot{background:#E8B060}
-.agent-card[data-agent-key="support"] .agent-status{color:#74D69E;background:rgba(116,214,158,.14)}
-.agent-card[data-agent-key="support"] .agent-status .dot{background:#74D69E}
-.agent-card[data-agent-key="analyst"] .agent-status{color:#74D69E;background:rgba(116,214,158,.14)}
-.agent-card[data-agent-key="analyst"] .agent-status .dot{background:#74D69E}
-.agent-card[data-agent-key="ops"] .agent-status{color:#9AA0A9;background:rgba(255,255,255,.06)}
-.agent-card[data-agent-key="ops"] .agent-status .dot{background:#9AA0A9}
+.agent-status{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;padding:4px 9px;border-radius:100px;font-family:var(--mono);color:var(--muted-1);background:rgba(255,255,255,.06)}
+.agent-status .dot{width:5px;height:5px;border-radius:50%;background:var(--muted-1)}
+/* Busy agents get their role color; idle/paused always render muted. */
+.agent-card[data-busy="true"][data-agent-key="ceo"] .agent-status{color:#E8B060;background:rgba(232,176,96,.14)}
+.agent-card[data-busy="true"][data-agent-key="ceo"] .agent-status .dot{background:#E8B060}
+.agent-card[data-busy="true"][data-agent-key="marketer"] .agent-status,
+.agent-card[data-busy="true"][data-agent-key="support"] .agent-status,
+.agent-card[data-busy="true"][data-agent-key="analyst"] .agent-status{color:#74D69E;background:rgba(116,214,158,.14)}
+.agent-card[data-busy="true"][data-agent-key="marketer"] .agent-status .dot,
+.agent-card[data-busy="true"][data-agent-key="support"] .agent-status .dot,
+.agent-card[data-busy="true"][data-agent-key="analyst"] .agent-status .dot{background:#74D69E}
+.agent-card[data-busy="true"][data-agent-key="sales"] .agent-status,
+.agent-card[data-busy="true"][data-agent-key="engineer"] .agent-status{color:#7FA8E8;background:rgba(127,168,232,.14)}
+.agent-card[data-busy="true"][data-agent-key="sales"] .agent-status .dot,
+.agent-card[data-busy="true"][data-agent-key="engineer"] .agent-status .dot{background:#7FA8E8}
 .agent-task{font-size:12.5px;color:var(--muted-4);background:rgba(255,255,255,.03);border:1px solid var(--border-6);border-radius:9px;padding:10px 12px;line-height:1.4}
 .agent-stats{display:flex;gap:16px;margin-top:12px;font-family:var(--mono);font-size:11px;color:var(--muted-2)}
 
@@ -310,6 +313,69 @@ a{color:inherit;text-decoration:none}
 .tx-label{font-size:13px}
 .tx-time{font-size:11px;color:var(--muted-2);font-family:var(--mono)}
 .tx-amount{font-family:var(--mono);font-size:13.5px;color:var(--green)}
+
+/* ---- Topbar pending-approvals pill ---- */
+.pending-pill{display:flex;align-items:center;gap:7px;background:rgba(232,176,96,.14);border:1px solid rgba(232,176,96,.35);color:var(--amber);font-weight:600;font-size:13px;padding:9px 14px;border-radius:9px;cursor:pointer}
+
+/* ============================================================
+   Shared panel (Approvals / Settings)
+   ============================================================ */
+.panel-card{background:#12151B;border:1px solid var(--border-1);border-radius:14px;padding:18px 20px;margin-bottom:18px}
+.panel-title{font-size:13px;font-weight:600;margin-bottom:2px}
+.panel-sub{font-size:12.5px;color:var(--muted-1);margin-bottom:14px}
+
+/* ---- Autonomy option picker (shared: Approvals + Settings) ---- */
+.autonomy-options{display:flex;gap:10px;flex-wrap:wrap}
+.autonomy-option{text-align:left;flex:1;min-width:180px;padding:12px 14px;border-radius:11px;cursor:pointer;background:rgba(255,255,255,.02);border:1px solid var(--border-2);color:inherit}
+.autonomy-option[data-selected="true"]{background:rgba(232,176,96,.12);border-color:rgba(232,176,96,.4)}
+.autonomy-option-label{font-size:13px;font-weight:600;color:var(--muted-4)}
+.autonomy-option[data-selected="true"] .autonomy-option-label{color:var(--amber)}
+.autonomy-option-desc{font-size:11.5px;color:var(--muted-1);margin-top:3px;line-height:1.35}
+.autonomy-option-row{display:flex;align-items:center;justify-content:space-between}
+.autonomy-option-dot{flex:none;width:16px;height:16px;border-radius:50%;border:1.5px solid var(--muted-4);background:transparent}
+.autonomy-option[data-selected="true"] .autonomy-option-dot{border-color:var(--amber);background:var(--amber)}
+
+/* ---- Approvals tab ---- */
+.approvals-section-title{font-size:13px;font-weight:600;margin-bottom:12px}
+.approvals-section-title.muted{color:var(--muted-1)}
+.approval-list{display:flex;flex-direction:column;gap:12px;margin-bottom:26px}
+.approval-card{background:#12151B;border:1px solid rgba(232,176,96,.25);border-radius:13px;padding:16px 18px}
+.approval-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
+.approval-kind{font-size:11px;color:var(--amber);font-family:var(--mono);letter-spacing:.06em}
+.approval-status-pill{font-size:11px;padding:4px 9px;border-radius:100px;font-family:var(--mono)}
+.approval-status-pill[data-status="pending"]{color:var(--amber);background:rgba(232,176,96,.14)}
+.approval-status-pill[data-status="approved"]{color:var(--green);background:rgba(116,214,158,.14)}
+.approval-status-pill[data-status="rejected"]{color:var(--red);background:rgba(232,138,127,.14)}
+.approval-title{font-size:14.5px;font-weight:600;margin-bottom:4px}
+.approval-detail{font-size:12.5px;color:var(--muted-1);line-height:1.45;margin-bottom:14px}
+.approval-actions{display:flex;gap:10px}
+.btn-approve{background:var(--green);color:#0A0C10;font-weight:600;font-size:13px;padding:9px 16px;border-radius:9px;border:none;cursor:pointer}
+.btn-reject{background:transparent;color:var(--red);border:1px solid rgba(232,138,127,.4);font-size:13px;padding:9px 16px;border-radius:9px;cursor:pointer}
+.btn-approve:disabled,.btn-reject:disabled{opacity:.6;cursor:default}
+.decided-list{display:flex;flex-direction:column;gap:10px}
+.decided-row{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(255,255,255,.02);border:1px solid var(--border-5);border-radius:11px;padding:12px 16px}
+.decided-title{font-size:13px}
+.decided-meta{font-size:11px;color:var(--muted-2);font-family:var(--mono);margin-top:2px}
+
+/* ---- Settings tab ---- */
+.settings-page{max-width:720px}
+.settings-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;font-size:13px}
+.settings-info-label{color:var(--muted-2);font-size:11px;margin-bottom:3px}
+.spend-cap-label{font-size:12px;color:var(--muted-1);margin-bottom:8px}
+.spend-cap-label .val{color:var(--text);font-family:var(--mono)}
+.spend-range{width:100%;accent-color:var(--amber)}
+.agent-toggle-list{display:flex;flex-direction:column;gap:2px}
+.agent-toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 4px;border-bottom:1px solid var(--border-6)}
+.agent-toggle-row:last-child{border-bottom:none}
+.agent-toggle-name{font-size:13px;font-weight:500}
+.agent-toggle-role{font-size:11.5px;color:var(--muted-2)}
+.agent-toggle-switch{width:40px;height:22px;border-radius:100px;border:none;cursor:pointer;position:relative;background:rgba(255,255,255,.12)}
+.agent-toggle-switch[data-on="true"]{background:var(--green)}
+.agent-toggle-knob{position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s}
+.agent-toggle-switch[data-on="true"] .agent-toggle-knob{left:20px}
+.digest-options{display:flex;gap:8px}
+.digest-option{padding:8px 16px;border-radius:9px;cursor:pointer;font-size:13px;background:transparent;color:var(--muted-1);border:1px solid var(--border-4)}
+.digest-option[data-selected="true"]{background:rgba(232,176,96,.14);color:var(--amber);border-color:rgba(232,176,96,.4)}
 
 /* ============================================================
    CO-FOUNDER CHAT PANEL

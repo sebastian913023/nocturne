@@ -38,7 +38,25 @@ db.exec(`
     campaigns_json        TEXT NOT NULL,
     money_json            TEXT NOT NULL,
     transactions_json     TEXT NOT NULL,
+    autonomy              TEXT NOT NULL DEFAULT 'approval',
+    spend_cap             INTEGER NOT NULL DEFAULT 25,
+    digest                TEXT NOT NULL DEFAULT '8am',
+    agent_enabled_json    TEXT NOT NULL DEFAULT '{}',
+    agents_busy_json      TEXT NOT NULL DEFAULT '[]',
     created_at            TEXT NOT NULL DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE IF NOT EXISTS approvals (
+    id          INTEGER PRIMARY KEY AUTOINCREMENT,
+    business_id INTEGER NOT NULL REFERENCES businesses(id) ON DELETE CASCADE,
+    kind        TEXT NOT NULL,
+    title       TEXT NOT NULL,
+    detail      TEXT NOT NULL,
+    amount      TEXT,
+    owner       TEXT NOT NULL,
+    status      TEXT NOT NULL DEFAULT 'pending',
+    created_at  TEXT NOT NULL DEFAULT (datetime('now')),
+    decided_at  TEXT
   );
 
   CREATE TABLE IF NOT EXISTS chat_messages (
@@ -61,6 +79,7 @@ db.exec(`
 
   CREATE INDEX IF NOT EXISTS idx_chat_business ON chat_messages(business_id, id);
   CREATE INDEX IF NOT EXISTS idx_activity_business ON activity_log(business_id, id);
+  CREATE INDEX IF NOT EXISTS idx_approvals_business ON approvals(business_id, id);
 `);
 
 module.exports = db;

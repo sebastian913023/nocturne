@@ -1,6 +1,6 @@
 // props: { business }
 function renderAgentsTab(props) {
-  const cards = props.business.agents.map((a) => h('div', { class: 'agent-card', 'data-agent-key': a.key }, [
+  const cards = props.business.agents.map((a) => h('div', { class: 'agent-card', 'data-agent-key': a.key, 'data-busy': String(!!a.busy), 'data-status': a.status }, [
     h('div', { class: 'agent-card-head' }, [
       h('div', { class: 'agent-card-id' }, [
         h('div', { class: 'agent-icon' }, a.icon),

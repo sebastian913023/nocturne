@@ -1,4 +1,4 @@
-// props: { business, onReviewAds }
+// props: { business, onGoApprovals }
 function renderGrowthTab(props) {
   const b = props.business;
 
@@ -32,7 +32,7 @@ function renderGrowthTab(props) {
       h('div', { class: 'growth-cta-title' }, 'Marketer drafted 3 new ad creatives overnight'),
       h('div', { class: 'growth-cta-sub' }, 'Waiting on your approval before spend begins. Est. daily budget $18.'),
     ]),
-    h('button', { class: 'btn-blue', onClick: props.onReviewAds }, 'Review'),
+    h('button', { class: 'btn-blue', onClick: props.onGoApprovals }, 'Review'),
   ]);
 
   return h('div', { class: 'nc-up' }, [

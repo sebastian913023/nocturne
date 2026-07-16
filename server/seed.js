@@ -3,37 +3,82 @@
 // numbers for a brand-new, pre-revenue company — not connected to a real
 // ad account, payment processor or hosting provider).
 
-const AGENTS = [
+// Roster matches the v2 design handoff: Ada (CEO), Vera (Growth Marketer),
+// Sol (Sales/Outbound), Nova (Support/Retention), Rhea (Growth Analyst),
+// Kit (Engineer). `busy`/`idle` are the two task/status pairs an agent
+// alternates between; `paused` (agent disabled in Settings) overrides both.
+const AGENT_DEFS = [
   {
-    key: 'ceo', name: 'Ada', role: 'CEO · strategy', icon: '◐', status: 'thinking',
-    task: "Deciding this week's priority: push waitlist growth before adding features.",
+    key: 'ceo', name: 'Ada', role: 'CEO · strategy', icon: '◐',
+    busyStatus: 'thinking', busyTask: "Deciding this week's priority: push waitlist growth before adding features.",
+    idleTask: "Reviewing this cycle's results. No new decision queued.",
     stat1: '12 decisions', stat2: 'runs nightly',
   },
   {
-    key: 'engineer', name: 'Kit', role: 'Engineer', icon: '⌘', status: 'idle',
-    task: 'Shipped landing page + Stripe. Standing by for the next build task.',
-    stat1: '8 deploys', stat2: '0 errors',
-  },
-  {
-    key: 'marketer', name: 'Vera', role: 'Marketer', icon: '✎', status: 'waiting',
-    task: '3 ad creatives ready. Needs your OK to start $18/day spend.',
+    key: 'marketer', name: 'Vera', role: 'Growth Marketer', icon: '✎',
+    busyStatus: 'active', busyTask: 'Running 3 ad creatives across Meta + Reddit at $18/day, reallocating spend to the best performer live.',
+    idleTask: 'Ad set paused. Standing by for next budget approval.',
     stat1: '5 assets', stat2: '2 blogs',
   },
   {
-    key: 'support', name: 'Nova', role: 'Support', icon: '✉', status: 'active',
-    task: 'Watching the inbox. Auto-replied to 1 question, escalated 0.',
+    key: 'sales', name: 'Sol', role: 'Sales / Outbound', icon: '⌁',
+    busyStatus: 'active', busyTask: 'Messaging warm waitlist signups 1:1, booking demo calls and pushing launch-week discount codes.',
+    idleTask: 'Outbound queue empty. Waiting on new leads.',
+    stat1: '14 dms sent', stat2: '3 calls booked',
+  },
+  {
+    key: 'support', name: 'Nova', role: 'Support / Retention', icon: '✉',
+    busyStatus: 'active', busyTask: 'Answering inbox in <2m and nudging silent trial users with a personalized check-in.',
+    idleTask: 'Inbox quiet. No open tickets.',
     stat1: '1 reply', stat2: '<2m response',
   },
   {
-    key: 'analyst', name: 'Rhea', role: 'Analyst', icon: '◫', status: 'active',
-    task: 'Tracking traffic sources. Direct + one Reddit thread driving most visits.',
+    key: 'analyst', name: 'Rhea', role: 'Growth Analyst', icon: '◫',
+    busyStatus: 'active', busyTask: "Tracking which channel converts best right now and shifting the team's focus toward it hourly.",
+    idleTask: 'Dashboards up to date. No anomalies to flag.',
     stat1: '214 visits', stat2: '6 sources',
   },
   {
-    key: 'ops', name: 'Milo', role: 'Ops', icon: '⚙', status: 'idle',
-    task: 'Servers healthy. Renewed nothing due yet. Cost so far: $0.31 today.',
-    stat1: '99.9% up', stat2: '$0.31/day',
+    key: 'engineer', name: 'Kit', role: 'Engineer', icon: '⌘',
+    busyStatus: 'active', busyTask: 'Shipping a faster checkout flow to lift conversion from waitlist to paid.',
+    idleTask: 'Site healthy. Standing by for the next build task.',
+    stat1: '8 deploys', stat2: '0 errors',
   },
+];
+
+// Renders an agent def into its display shape given whether it's enabled
+// (per Settings) and "busy" (varies cycle to cycle — see nightCycle.js).
+function renderAgent(def, { enabled, busy }) {
+  const paused = !enabled;
+  const isBusy = !paused && busy;
+  return {
+    key: def.key, name: def.name, role: def.role, icon: def.icon,
+    task: paused ? 'Paused by founder in Settings.' : (busy ? def.busyTask : def.idleTask),
+    status: paused ? 'paused' : (busy ? def.busyStatus : 'idle'),
+    busy: isBusy,
+    stat1: def.stat1, stat2: def.stat2,
+  };
+}
+
+function defaultAgentEnabled() {
+  const map = {};
+  for (const def of AGENT_DEFS) map[def.name] = true;
+  return map;
+}
+
+function renderAgents(agentEnabled, busyKeys) {
+  const busySet = new Set(busyKeys || AGENT_DEFS.map((d) => d.key));
+  return AGENT_DEFS.map((def) => renderAgent(def, {
+    enabled: agentEnabled[def.name] !== false,
+    busy: busySet.has(def.key),
+  }));
+}
+
+const DEFAULT_APPROVALS = (domain) => [
+  { kind: 'Spend', title: 'Start $18/day ad spend across 3 creatives', detail: 'Meta + Reddit, targeting remote-work audiences. Projected +12 signups/week.', amount: '$18/day', owner: 'Vera', status: 'pending' },
+  { kind: 'Content', title: 'Publish 2 SEO blog posts', detail: `"Best ${domain ? 'options like ' + domain : 'subscriptions'} for remote workers" + a comparison post. Both drafted and reviewed for accuracy.`, amount: null, owner: 'Vera', status: 'pending' },
+  { kind: 'Outreach', title: 'Send a win-back email to 14 lapsed leads', detail: 'Personalized note + a launch-week code. No spend, just outbound copy.', amount: null, owner: 'Sol', status: 'approved' },
+  { kind: 'Product', title: 'Ship a shorter, 1-page checkout flow', detail: 'Removes 2 form steps to lift conversion from waitlist to paid.', amount: null, owner: 'Kit', status: 'approved' },
 ];
 
 function buildInitialDashboard(identity) {
@@ -92,10 +137,16 @@ function buildInitialDashboard(identity) {
     { time: '04:15', agent: 'CEO', text: 'Cycle complete. Compiled morning report. Going back to sleep until 03:00 tomorrow.' },
   ];
 
+  const agentEnabled = defaultAgentEnabled();
+  const busyKeys = ['ceo', 'marketer', 'sales', 'support', 'analyst']; // Kit idle at launch, matches design
+  const agents = renderAgents(agentEnabled, busyKeys);
+
   return {
-    metrics, report, roadmap, agents: AGENTS, funnel, campaigns, money, transactions, activity,
+    metrics, report, roadmap, agents, funnel, campaigns, money, transactions, activity,
     reportDate: new Date().toISOString().slice(0, 10),
+    autonomy: 'approval', spendCap: 25, digest: '8am', agentEnabled, busyKeys,
+    approvals: DEFAULT_APPROVALS(domain),
   };
 }
 
-module.exports = { buildInitialDashboard, AGENTS };
+module.exports = { buildInitialDashboard, AGENT_DEFS, renderAgents, defaultAgentEnabled, DEFAULT_APPROVALS };

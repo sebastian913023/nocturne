@@ -3,6 +3,8 @@ const TABS = [
   ['agents', 'Agents', '◇'],
   ['growth', 'Growth', '↗'],
   ['money', 'Money', '$'],
+  ['approvals', 'Approvals', '◎'],
+  ['settings', 'Settings', '⚙'],
 ];
 
 function two(n) { return String(n).padStart(2, '0'); }
@@ -22,6 +24,7 @@ function computeCountdown() {
 //   business, activity, tab, chatOpen, chatMessages, chatLoading, chatInput, chatSending,
 //   onTabChange, onToggleChat, onVisitSite, onSignOut, onRunCycle,
 //   onChatInput, onChatKeyDown, onSendChat, onSuggestion, onUpgrade, planStatus,
+//   onSelectAutonomy, onSpendCap, onSelectDigest, onToggleAgent, onApprove, onReject,
 // }
 function renderAppScreen(root, props) {
   const b = props.business;
@@ -30,7 +33,7 @@ function renderAppScreen(root, props) {
   const navButtons = TABS.map(([id, label, icon]) => h('button', {
     class: 'side-nav-btn', 'data-on': String(props.tab === id),
     onClick: () => props.onTabChange(id),
-  }, [h('span', { class: 'icon' }, icon), label]));
+  }, [h('span', { class: 'icon' }, icon), id === 'approvals' && b.pendingCount ? `${label} (${b.pendingCount})` : label]));
 
   const sidebar = h('aside', { class: 'sidebar' }, [
     h('div', { class: 'sidebar-logo' }, [h('div', { class: 'orb' }), h('span', {}, 'NOCTURNE')]),
@@ -54,11 +57,20 @@ function renderAppScreen(root, props) {
     ]),
   ]);
 
+  const goApprovals = () => props.onTabChange('approvals');
+
   let tabContent;
-  if (props.tab === 'overview') tabContent = renderOverviewTab({ business: b, activity: props.activity, today });
+  if (props.tab === 'overview') tabContent = renderOverviewTab({ business: b, activity: props.activity, today, onGoApprovals: goApprovals });
   else if (props.tab === 'agents') tabContent = renderAgentsTab({ business: b });
-  else if (props.tab === 'growth') tabContent = renderGrowthTab({ business: b, onReviewAds: props.onReviewAds });
-  else tabContent = renderMoneyTab({ business: b });
+  else if (props.tab === 'growth') tabContent = renderGrowthTab({ business: b, onGoApprovals: goApprovals });
+  else if (props.tab === 'money') tabContent = renderMoneyTab({ business: b });
+  else if (props.tab === 'approvals') tabContent = renderApprovalsTab({
+    business: b, onSelectAutonomy: props.onSelectAutonomy, onApprove: props.onApprove, onReject: props.onReject,
+  });
+  else tabContent = renderSettingsTab({
+    business: b, onSelectAutonomy: props.onSelectAutonomy, onSpendCap: props.onSpendCap,
+    onSelectDigest: props.onSelectDigest, onToggleAgent: props.onToggleAgent,
+  });
 
   const mainCol = h('div', { class: 'main-col' }, [
     h('header', { class: 'topbar' }, [
@@ -70,6 +82,7 @@ function renderAppScreen(root, props) {
         h('div', { class: 'topbar-sub' }, `${b.domain} · ${b.category}`),
       ]),
       h('div', { class: 'topbar-actions' }, [
+        b.pendingCount > 0 ? h('button', { class: 'pending-pill', onClick: goApprovals }, `◎ ${b.pendingCount} awaiting your OK`) : null,
         props.planStatus !== 'active' ? h('button', { class: 'btn-ghost', onClick: props.onUpgrade }, 'Upgrade') : null,
         h('button', { class: 'btn-ghost', onClick: props.onVisitSite }, 'Visit site ↗'),
         h('button', { class: 'btn-amber', onClick: props.onToggleChat }, '◐ Ask your co-founder'),
