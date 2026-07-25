@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nocturne — Investor Deck</title>
+<meta name="description" content="Nocturne: the AI co-founder that plans, builds, launches and runs a business autonomously.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/styles.css">
+<style>
+  .pd-nav{position:fixed;top:0;left:0;right:0;z-index:10;display:flex;align-items:center;justify-content:space-between;padding:20px 40px;background:linear-gradient(to bottom, rgba(10,12,16,.92), transparent)}
+  .pd-navlinks{display:flex;gap:22px;font-size:12.5px;color:var(--muted-1)}
+  .pd-navlinks a:hover{color:var(--text)}
+  .pd-slide{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:90px 60px;position:relative;border-bottom:1px solid var(--border-2)}
+  .pd-inner{max-width:1040px;margin:0 auto;width:100%}
+  .pd-num{position:absolute;bottom:28px;right:32px;font-size:11px;color:var(--muted-2);font-family:var(--mono)}
+  .pd-kicker{font-size:11px;letter-spacing:.18em;color:var(--amber);font-family:var(--mono);text-transform:uppercase;margin-bottom:16px}
+  .pd-hero{font-family:var(--serif);font-size:clamp(40px,6vw,84px);line-height:1.03;margin:0 0 22px;letter-spacing:-.01em}
+  .pd-title{font-family:var(--serif);font-size:clamp(30px,4vw,46px);line-height:1.08;margin:0 0 18px}
+  .pd-lead{font-size:19px;line-height:1.55;color:var(--muted-1);max-width:680px;margin:0 0 8px}
+  .pd-grid{display:grid;gap:16px}
+  .pd-card{background:var(--panel-1);border:1px solid var(--border-3);border-radius:14px;padding:22px 24px}
+  .pd-two{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center}
+  @media (max-width:860px){.pd-two{grid-template-columns:1fr}.pd-slide{padding:70px 24px}}
+  .pd-tag{font-size:11px;color:var(--muted-2);font-family:var(--mono);letter-spacing:.08em;text-transform:uppercase}
+  .pd-clean{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+  .pd-clean li{display:flex;gap:12px;align-items:flex-start;color:var(--muted-1);font-size:15px;line-height:1.5}
+  .pd-clean li::before{content:'—';color:var(--amber);flex:none}
+  .pd-placeholder{color:var(--muted-2);font-style:italic}
+  .pd-shot{width:100%;border-radius:12px;border:1px solid var(--border-3);display:block;box-shadow:0 30px 80px -30px rgba(0,0,0,.7)}
+  .pd-shotcap{font-size:12px;color:var(--muted-2);font-family:var(--mono);margin-top:10px}
+  .pd-status-dot{width:9px;height:9px;border-radius:50%;display:inline-block}
+  .pd-end{text-align:center;color:var(--muted-2);font-size:12px;padding:40px;font-family:var(--mono)}
+  .pd-btn-primary{background:var(--amber);color:#1A1206;font-weight:600;font-size:14.5px;padding:12px 22px;border-radius:10px;text-decoration:none}
+  .pd-btn-ghost{border:1px solid var(--border-4);color:var(--text);font-weight:600;font-size:14.5px;padding:12px 22px;border-radius:10px;text-decoration:none}
+</style>
+</head>
+<body>
+
+<nav class="pd-nav">
+  <div class="idea-brand"><div class="orb"></div><span>NOCTURNE</span></div>
+  <div class="pd-navlinks">
+    <a href="/investors.html">Investor preview</a>
+    <a href="/">Live product</a>
+    <a href="/brand-kit.html">Brand kit</a>
+  </div>
+</nav>
+
+<!-- 01 COVER -->
+<section class="pd-slide" style="background:radial-gradient(120% 80% at 50% -10%,rgba(232,176,96,.10),transparent 55%)">
+  <div class="pd-inner" style="text-align:center">
+    <div class="orb" style="width:52px;height:52px;margin:0 auto 26px;box-shadow:0 0 30px rgba(232,176,96,.5)"></div>
+    <div class="pd-kicker" style="justify-content:center;display:flex">Seed round · Investor deck</div>
+    <h1 class="pd-hero">Describe a business tonight.<br><em style="font-style:italic;color:var(--amber)">Wake up to a company.</em></h1>
+    <p class="pd-lead" style="margin:0 auto">Nocturne is an AI co-founder that plans, builds, launches and runs a business autonomously — reporting back every morning, and asking permission before it spends your money.</p>
+    <div style="margin-top:34px;color:var(--muted-2)" class="mono">nocturne.co · <span class="pd-placeholder">contact@nocturne.co</span></div>
+  </div>
+  <div class="pd-num">01 / 12</div>
+</section>
+
+<!-- 02 PROBLEM -->
+<section class="pd-slide">
+  <div class="pd-inner">
+    <div class="pd-kicker">The problem</div>
+    <h2 class="pd-title">Most business ideas die from operations, not lack of demand.</h2>
+    <p class="pd-lead">Naming, a domain, a landing page, payments, a first ad, a support inbox, a bookkeeping habit — none of it is hard on its own. Together it's enough friction that most ideas never leave a notes app.</p>
+    <div class="pd-grid" style="grid-template-columns:repeat(3,1fr);margin-top:36px">
+      <div class="pd-card"><div class="pd-tag" style="margin-bottom:8px">Time</div>A single founder juggling ten disciplines has no nights or weekends left for the idea itself.</div>
+      <div class="pd-card"><div class="pd-tag" style="margin-bottom:8px">Cost</div>Hiring a co-founder, agency, or freelancer for each piece is expensive before there's a dollar of revenue.</div>
+      <div class="pd-card"><div class="pd-tag" style="margin-bottom:8px">Trust</div>Existing "AI builder" tools generate a one-off artifact — a site, a doc — then stop. Nobody runs the business afterward.</div>
+    </div>
+  </div>
+  <div class="pd-num">02 / 12</div>
+</section>
+
+<!-- 03 SOLUTION -->
+<section class="pd-slide">
+  <div class="pd-inner">
+    <div class="pd-kicker">The solution</div>
+    <h2 class="pd-title">An AI co-founder — not another generator.</h2>
+    <p class="pd-lead">You describe an idea in one sentence. Nocturne names it, builds the site and checkout, wires up a small team of specialized agents, and keeps running the business every night — surfacing a morning report and pausing on anything that needs your OK.</p>
+    <ul class="pd-clean" style="margin-top:28px;max-width:640px">
+      <li>No team, no code, no dashboards to configure — you bring the idea, Nocturne brings the 3am shift.</li>
+      <li>Human-in-the-loop by default: spend, publishing, and outreach can all require founder approval.</li>
+      <li>Aligned incentives: Nocturne only takes a cut of revenue it helps generate.</li>
+    </ul>
+  </div>
+  <div class="pd-num">03 / 12</div>
+</section>
+
+<!-- 04 HOW IT WORKS -->
+<section class="pd-slide">
+  <div class="pd-inner">
+    <div class="pd-kicker">How it works</div>
+    <h2 class="pd-title">Describe → Build → Operate.</h2>
+    <div class="pd-grid" style="grid-template-columns:repeat(3,1fr);margin-top:32px">
+      <div class="pd-card">
+        <div class="pd-tag" style="color:var(--amber);margin-bottom:10px">01 · Describe</div>
+        <div style="font-size:15px;color:var(--muted-1);line-height:1.5">One sentence about the idea — or let Nocturne suggest one.</div>
+      </div>
+      <div class="pd-card">
+        <div class="pd-tag" style="color:var(--blue);margin-bottom:10px">02 · Build</div>
+        <div style="font-size:15px;color:var(--muted-1);line-height:1.5">A 7-step pipeline: market read, naming &amp; domain, brand &amp; landing page, code &amp; database, servers &amp; payments, publish, then wake the agent team.</div>
+      </div>
+      <div class="pd-card">
+        <div class="pd-tag" style="color:var(--green);margin-bottom:10px">03 · Operate</div>
+        <div style="font-size:15px;color:var(--muted-1);line-height:1.5">A nightly cycle runs the company — growth, sales, support, engineering — and reports back every morning.</div>
+      </div>
+    </div>
+  </div>
+  <div class="pd-num">04 / 12</div>
+</section>
+
+<!-- 05 PRODUCT: IDEA + AGENTS -->
+<section class="pd-slide">
+  <div class="pd-inner">
+    <div class="pd-kicker">Product · today</div>
+    <h2 class="pd-title">A real, running application — not a mockup.</h2>
+    <p class="pd-lead" style="margin-bottom:28px">Screens below are from the Nocturne design system, recreated pixel-for-pixel in the live production app at <a href="/" style="color:var(--amber)">nocturne.co</a>.</p>
+    <div class="pd-two">
+      <div>
+        <img class="pd-shot" src="/pitch-assets/01-idea.jpg" alt="Nocturne idea landing screen">
+        <div class="pd-shotcap">Landing — describe your idea in one sentence</div>
+      </div>
+      <div>
+        <img class="pd-shot" src="/pitch-assets/04-agents.jpg" alt="Nocturne agent roster screen">
+        <div class="pd-shotcap">The agent team — Ada, Vera, Sol, Nova, Rhea, Kit</div>
+      </div>
+    </div>
+  </div>
+  <div class="pd-num">05 / 12</div>
+</section>
+
+<!-- 06 PRODUCT: GROWTH + APPROVALS -->
+<section class="pd-slide">
+  <div class="pd-inner">
+    <div class="pd-kicker">Product · human-in-the-loop</div>
+    <h2 class="pd-title">Autonomy, with a founder in the loop.</h2>
+    <p class="pd-lead" style="margin-bottom:28px">Growth runs continuously; anything that spends money or represents the company publicly can require explicit founder approval before it happens — a real, working Approvals queue in the app today.</p>
+    <div class="pd-two">
+      <div>
+        <img class="pd-shot" src="/pitch-assets/05-growth.jpg" alt="Nocturne growth dashboard screen">
+        <div class="pd-shotcap">Growth — acquisition funnel &amp; live campaigns</div>
+      </div>
+      <div>
+        <img class="pd-shot" src="/pitch-assets/07-approvals.jpg" alt="Nocturne approvals screen">
+        <div class="pd-shotcap">Approvals — autonomy mode &amp; pending decisions</div>
+      </div>
+    </div>
+  </div>
+  <div class="pd-num">06 / 12</div>
+</section>
+
+<!-- 07 BUSINESS MODEL -->
+<section class="pd-slide">
+  <div class="pd-inner">
+    <div class="pd-kicker">Business model</div>
+    <h2 class="pd-title">We only win when you win.</h2>
+    <div class="pd-grid" style="grid-template-columns:repeat(3,1fr);margin-top:32px">
+      <div class="pd-card" style="text-align:center">
+        <div style="font-family:var(--serif);font-size:34px;color:var(--text)">Free</div>
+        <div style="color:var(--muted-1);font-size:13px;margin-top:6px">to start · no card required</div>
+      </div>
+      <div class="pd-card" style="text-align:center;border-color:rgba(232,176,96,.3)">
+        <div style="font-family:var(--serif);font-size:34px;color:var(--amber)">$49<span style="font-size:16px">/mo</span></div>
+        <div style="color:var(--muted-1);font-size:13px;margin-top:6px">flat seat price — live via Stripe Checkout today</div>
+      </div>
+      <div class="pd-card" style="text-align:center">
+        <div style="font-family:var(--serif);font-size:34px;color:var(--text)">+20%</div>
+        <div style="color:var(--muted-1);font-size:13px;margin-top:6px">revenue share (positioning today; billing not yet wired)</div>
+      </div>
+    </div>
+    <p class="pd-lead" style="margin-top:28px">A predictable platform fee plus a revenue share keeps Nocturne's incentives pointed at one thing: growing the companies it runs.</p>
+  </div>
+  <div class="pd-num">07 / 12</div>
+</section>
+
+<!-- 08 MARKET -->
+<section class="pd-slide">
+  <div class="pd-inner">
+    <div class="pd-kicker">Market</div>
+    <h2 class="pd-title">Sitting between three fast-growing categories.</h2>
+    <div class="pd-grid" style="grid-template-columns:repeat(3,1fr);margin-top:32px">
+      <div class="pd-card">
+        <div class="pd-tag" style="margin-bottom:8px">No-code / DIY business tools</div>
+        <div style="color:var(--muted-1);font-size:14px;line-height:1.5">Site builders, form tools, and DTC starter kits have proven people will pay to skip technical setup.</div>
+      </div>
+      <div class="pd-card">
+        <div class="pd-tag" style="margin-bottom:8px">Agentic AI</div>
+        <div style="color:var(--muted-1);font-size:14px;line-height:1.5">Models can now plan, write, and act across multi-step tasks reliably enough to run real workflows unattended.</div>
+      </div>
+      <div class="pd-card">
+        <div class="pd-tag" style="margin-bottom:8px">Micro-SMB formation</div>
+        <div style="color:var(--muted-1);font-size:14px;line-height:1.5">Millions of new small businesses and side projects are registered every year, most solo-founded and under-resourced.</div>
+      </div>
+    </div>
+    <p class="pd-tag" style="margin-top:26px;color:var(--muted-2)">Illustrative categories — sizing to be substantiated with third-party market data during diligence.</p>
+  </div>
+  <div class="pd-num">08 / 12</div>
+</section>
+
+<!-- 09 WHY NOW -->
+<section class="pd-slide">
+  <div class="pd-inner">
+    <div class="pd-kicker">Why now</div>
+    <h2 class="pd-title">The pieces only just clicked into place.</h2>
+    <ul class="pd-clean" style="margin-top:24px;max-width:680px">
+      <li>Frontier models can reliably write production-quality code, copy, and structured decisions — not just chat.</li>
+      <li>Tool-use and multi-agent orchestration have matured enough to coordinate a "team" of specialized agents.</li>
+      <li>Approval-gated autonomy (human-in-the-loop) has become an accepted pattern, letting people trust an AI with real spend and publishing power.</li>
+    </ul>
+  </div>
+  <div class="pd-num">09 / 12</div>
+</section>
+
+<!-- 10 STATUS / ROADMAP -->
+<section class="pd-slide">
+  <div class="pd-inner">
+    <div class="pd-kicker">Status</div>
+    <h2 class="pd-title">Honest about where we are.</h2>
+    <div class="pd-grid" style="grid-template-columns:repeat(4,1fr);margin-top:30px">
+      <div class="pd-card" style="border-color:rgba(116,214,158,.3)">
+        <span class="pd-status-dot" style="background:var(--green);box-shadow:0 0 8px var(--green)"></span>
+        <div style="margin-top:10px;font-weight:600;font-size:14px">Brand &amp; design</div>
+        <div style="color:var(--muted-1);font-size:12.5px;margin-top:4px">Complete — full visual system, voice, all core screens</div>
+      </div>
+      <div class="pd-card" style="border-color:rgba(116,214,158,.3)">
+        <span class="pd-status-dot" style="background:var(--green);box-shadow:0 0 8px var(--green)"></span>
+        <div style="margin-top:10px;font-weight:600;font-size:14px">Production app</div>
+        <div style="color:var(--muted-1);font-size:12.5px;margin-top:4px">Live — Express + SQLite, real accounts, real Stripe checkout, real Claude-powered chat</div>
+      </div>
+      <div class="pd-card" style="border-color:rgba(116,214,158,.3)">
+        <span class="pd-status-dot" style="background:var(--green);box-shadow:0 0 8px var(--green)"></span>
+        <div style="margin-top:10px;font-weight:600;font-size:14px">Nightly agent cycle</div>
+        <div style="color:var(--muted-1);font-size:12.5px;margin-top:4px">Live — cron job at 03:00, generates the morning report</div>
+      </div>
+      <div class="pd-card">
+        <span class="pd-status-dot" style="background:var(--muted-2)"></span>
+        <div style="margin-top:10px;font-weight:600;font-size:14px">Real-world execution</div>
+        <div style="color:var(--muted-1);font-size:12.5px;margin-top:4px">Not yet — ad spend, domain purchase, and hosting for the *generated* businesses are simulated, not wired to live third-party accounts</div>
+      </div>
+    </div>
+    <p class="pd-tag" style="margin-top:26px;color:var(--muted-2)">No live customers or revenue yet. Dashboard traffic/ad/revenue numbers inside a generated company are simulated for demonstration — see RUNNING.md in the repo for the full "real vs. simulated" breakdown.</p>
+  </div>
+  <div class="pd-num">10 / 12</div>
+</section>
+
+<!-- 11 THE ASK -->
+<section class="pd-slide">
+  <div class="pd-inner">
+    <div class="pd-kicker">The ask</div>
+    <h2 class="pd-title">Raising a seed round to fund the next phase.</h2>
+    <div class="pd-grid" style="grid-template-columns:repeat(3,1fr);margin-top:30px">
+      <div class="pd-card"><div class="pd-tag" style="margin-bottom:8px">Round size</div><div class="pd-placeholder">[to be filled in]</div></div>
+      <div class="pd-card"><div class="pd-tag" style="margin-bottom:8px">Use of funds</div><div style="color:var(--muted-1);font-size:14px;line-height:1.5">Wiring real third-party execution (ads, domains, hosting) and first-cohort go-to-market</div></div>
+      <div class="pd-card"><div class="pd-tag" style="margin-bottom:8px">Timeline</div><div class="pd-placeholder">[to be filled in]</div></div>
+    </div>
+  </div>
+  <div class="pd-num">11 / 12</div>
+</section>
+
+<!-- 12 CLOSE -->
+<section class="pd-slide" style="background:radial-gradient(90% 70% at 50% 40%,rgba(232,176,96,.10),transparent 60%)">
+  <div class="pd-inner" style="text-align:center">
+    <div class="orb" style="width:44px;height:44px;margin:0 auto 22px"></div>
+    <h2 class="pd-title">You bring the idea.<br><em style="font-style:italic;color:var(--amber)">We bring the 3am shift.</em></h2>
+    <p class="pd-lead" style="margin:0 auto 24px">Try the real product, or review the brand system in full.</p>
+    <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+      <a href="/" class="pd-btn-primary">Try the live product →</a>
+      <a href="/investors.html" class="pd-btn-ghost">Investor preview</a>
+    </div>
+    <div class="pd-placeholder mono" style="margin-top:40px;font-size:12px">contact@nocturne.co · confidential — not for distribution</div>
+  </div>
+  <div class="pd-num">12 / 12</div>
+</section>
+
+<footer class="pd-end">NOCTURNE — an AI co-founder that plans, builds, launches and runs your business.</footer>
+
+</body>
+</html>
