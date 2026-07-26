@@ -37,6 +37,11 @@ router.post('/create-checkout-session', requireAuth, async (req, res) => {
       line_items: [{ price: STRIPE_PRICE_ID, quantity: 1 }],
       customer_email: business.stripe_customer_id ? undefined : user.email,
       customer: business.stripe_customer_id || undefined,
+      // Stripe Checkout needs the customer's address to calculate tax; for a
+      // new customer it collects this automatically, for an existing one it
+      // needs explicit permission to update the address it has on file.
+      customer_update: business.stripe_customer_id ? { address: 'auto', name: 'auto' } : undefined,
+      automatic_tax: { enabled: true },
       client_reference_id: String(req.userId),
       subscription_data: {
         metadata: { userId: String(req.userId), businessId: String(business.id) },
