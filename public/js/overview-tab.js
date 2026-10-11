@@ -6,7 +6,9 @@ function renderOverviewTab(props) {
     const clickable = r.tone === 'review' && b.pendingCount > 0;
     return h('div', {
       class: 'report-row', 'data-tone': r.tone, 'data-clickable': String(clickable),
+      role: clickable ? 'button' : undefined, tabindex: clickable ? '0' : undefined,
       onClick: clickable ? props.onGoApprovals : undefined,
+      onKeyDown: clickable ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); props.onGoApprovals(); } } : undefined,
     }, [
       h('div', { class: 'report-icon' }, r.icon),
       h('div', { class: 'report-body' }, [
@@ -60,7 +62,13 @@ function renderOverviewTab(props) {
     h('div', { class: 'roadmap-list' }, roadmapRows),
   ]);
 
+  const stage = renderStage('overview', {
+    title: 'Company core',
+    hint: 'Orbs are this morning\u2019s report, pillars are your key metrics, and the ring counts down the day to the 03:00 night cycle.',
+  });
+
   return h('div', { class: 'nc-up' }, [
+    stage,
     reportCard,
     metricsGrid,
     h('div', { class: 'overview-split' }, [streamCard, roadmapCard]),

@@ -1,29 +1,32 @@
-const express = require('express');
 const db = require('../db');
+const { asyncRouter } = require('../asyncRouter');
 const { requireAuth } = require('../auth');
 const { generateIdentity } = require('../identity');
 const { buildInitialDashboard, AGENT_DEFS, renderAgents } = require('../seed');
 const { runCycleForBusiness } = require('../nightCycle');
 
-const router = express.Router();
+const router = asyncRouter();
 
 const AUTONOMY_MODES = ['full', 'approval', 'paused'];
 const DIGEST_OPTIONS = ['6am', '8am', 'off'];
 const AGENT_KEYS = new Set(AGENT_DEFS.map((d) => d.key));
 
-function getBusinessRow(userId) {
-  return db.prepare('SELECT * FROM businesses WHERE user_id = ?').get(userId);
+async function getBusinessRow(userId) {
+  const { rows: [row] } = await db.query('SELECT * FROM businesses WHERE user_id = $1', [userId]);
+  return row;
 }
 
-function getApprovals(businessId) {
-  return db
-    .prepare('SELECT id, kind, title, detail, amount, owner, status FROM approvals WHERE business_id = ? ORDER BY id ASC')
-    .all(businessId);
+async function getApprovals(businessId) {
+  const { rows } = await db.query(
+    'SELECT id, kind, title, detail, amount, owner, status FROM approvals WHERE business_id = $1 ORDER BY id ASC',
+    [businessId]
+  );
+  return rows;
 }
 
-function serializeBusiness(row) {
+async function serializeBusiness(row) {
   const agentEnabled = JSON.parse(row.agent_enabled_json);
-  const approvals = getApprovals(row.id);
+  const approvals = await getApprovals(row.id);
   return {
     id: row.id,
     idea: row.idea,
@@ -54,23 +57,24 @@ function serializeBusiness(row) {
   };
 }
 
-function getActivity(businessId, limit = 40) {
-  return db
-    .prepare('SELECT time_label as time, agent, color, text FROM activity_log WHERE business_id = ? ORDER BY id DESC LIMIT ?')
-    .all(businessId, limit)
-    .reverse();
+async function getActivity(businessId, limit = 40) {
+  const { rows } = await db.query(
+    'SELECT time_label AS time, agent, color, text FROM activity_log WHERE business_id = $1 ORDER BY id DESC LIMIT $2',
+    [businessId, limit]
+  );
+  return rows.reverse();
 }
 
-router.get('/', requireAuth, (req, res) => {
-  const row = getBusinessRow(req.userId);
+router.get('/', requireAuth, async (req, res) => {
+  const row = await getBusinessRow(req.userId);
   if (!row) return res.json({ business: null });
-  res.json({ business: serializeBusiness(row), activity: getActivity(row.id) });
+  res.json({ business: await serializeBusiness(row), activity: await getActivity(row.id) });
 });
 
 router.post('/', requireAuth, async (req, res) => {
-  const existing = getBusinessRow(req.userId);
+  const existing = await getBusinessRow(req.userId);
   if (existing) {
-    return res.status(409).json({ error: 'You already have a company running.', business: serializeBusiness(existing) });
+    return res.status(409).json({ error: 'You already have a company running.', business: await serializeBusiness(existing) });
   }
   const idea = (req.body && typeof req.body.idea === 'string' ? req.body.idea : '').trim();
   if (!idea) return res.status(400).json({ error: 'Describe your business idea first.' });
@@ -79,18 +83,7 @@ router.post('/', requireAuth, async (req, res) => {
   const identity = await generateIdentity(idea);
   const dash = buildInitialDashboard(identity);
 
-  const insert = db.prepare(`
-    INSERT INTO businesses (
-      user_id, idea, name, tagline, domain, category, one_liner, plan_status,
-      metrics_json, report_json, report_date, roadmap_json, agents_json,
-      funnel_json, campaigns_json, money_json, transactions_json,
-      autonomy, spend_cap, digest, agent_enabled_json, agents_busy_json
-    ) VALUES (@user_id, @idea, @name, @tagline, @domain, @category, @one_liner, 'free',
-      @metrics_json, @report_json, @report_date, @roadmap_json, @agents_json,
-      @funnel_json, @campaigns_json, @money_json, @transactions_json,
-      @autonomy, @spend_cap, @digest, @agent_enabled_json, @agents_busy_json)
-  `);
-  const info = insert.run({
+  const fields = {
     user_id: req.userId,
     idea,
     name: identity.name,
@@ -112,41 +105,47 @@ router.post('/', requireAuth, async (req, res) => {
     digest: dash.digest,
     agent_enabled_json: JSON.stringify(dash.agentEnabled),
     agents_busy_json: JSON.stringify(dash.busyKeys),
+  };
+  const columns = Object.keys(fields);
+  const AGENT_COLOR = { CEO: '#E8B060', Designer: '#C79BF2', Engineer: '#7FA8E8', Marketer: '#74D69E', Support: '#E88A7F' };
+
+  await db.tx(async (client) => {
+    const { rows: [{ id: businessId }] } = await client.query(
+      `INSERT INTO businesses (${columns.join(', ')}) VALUES (${columns.map((_, i) => `$${i + 1}`).join(', ')}) RETURNING id`,
+      columns.map((c) => fields[c])
+    );
+    for (const entry of dash.activity) {
+      await client.query(
+        'INSERT INTO activity_log (business_id, time_label, agent, color, text) VALUES ($1, $2, $3, $4, $5)',
+        [businessId, entry.time, entry.agent, AGENT_COLOR[entry.agent] || '#9AA0A9', entry.text]
+      );
+    }
+    for (const a of dash.approvals) {
+      await client.query(
+        'INSERT INTO approvals (business_id, kind, title, detail, amount, owner, status, decided_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)',
+        [businessId, a.kind, a.title, a.detail, a.amount, a.owner, a.status, a.status === 'pending' ? null : new Date().toISOString()]
+      );
+    }
   });
 
-  const insertActivity = db.prepare(
-    'INSERT INTO activity_log (business_id, time_label, agent, color, text) VALUES (?, ?, ?, ?, ?)'
-  );
-  const AGENT_COLOR = { CEO: '#E8B060', Designer: '#C79BF2', Engineer: '#7FA8E8', Marketer: '#74D69E', Support: '#E88A7F' };
-  for (const entry of dash.activity) {
-    insertActivity.run(info.lastInsertRowid, entry.time, entry.agent, AGENT_COLOR[entry.agent] || '#9AA0A9', entry.text);
-  }
-
-  const insertApproval = db.prepare(
-    'INSERT INTO approvals (business_id, kind, title, detail, amount, owner, status, decided_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-  );
-  for (const a of dash.approvals) {
-    insertApproval.run(info.lastInsertRowid, a.kind, a.title, a.detail, a.amount, a.owner, a.status, a.status === 'pending' ? null : new Date().toISOString());
-  }
-
-  const row = getBusinessRow(req.userId);
-  res.status(201).json({ business: serializeBusiness(row), activity: getActivity(row.id) });
+  const row = await getBusinessRow(req.userId);
+  res.status(201).json({ business: await serializeBusiness(row), activity: await getActivity(row.id) });
 });
 
 // Manually advances one autonomous "night cycle" for the demo — the real
 // schedule runs automatically every day at 03:00 server time, but a founder
 // shouldn't have to wait until 3am to see how the product behaves.
 router.post('/cycle', requireAuth, async (req, res) => {
-  const existing = getBusinessRow(req.userId);
+  const existing = await getBusinessRow(req.userId);
   if (!existing) return res.status(404).json({ error: 'No company yet.' });
   const updated = await runCycleForBusiness(existing);
-  res.json({ business: serializeBusiness(updated), activity: getActivity(updated.id) });
+  res.json({ business: await serializeBusiness(updated), activity: await getActivity(updated.id) });
 });
 
 // Autonomy mode / spend cap / morning digest time — the founder's
 // human-in-the-loop controls (Approvals tab shortcuts + Settings tab).
-router.patch('/settings', requireAuth, (req, res) => {
-  const existing = getBusinessRow(req.userId);
+router.patch('/settings', requireAuth, async (req, res) => {
+  const existing = await getBusinessRow(req.userId);
   if (!existing) return res.status(404).json({ error: 'No company yet.' });
 
   const { autonomy, spendCap, digest } = req.body || {};
@@ -166,17 +165,18 @@ router.patch('/settings', requireAuth, (req, res) => {
   }
   if (Object.keys(updates).length === 0) return res.status(400).json({ error: 'Nothing to update.' });
 
-  const setClause = Object.keys(updates).map((k) => `${k} = @${k}`).join(', ');
-  db.prepare(`UPDATE businesses SET ${setClause} WHERE id = @id`).run({ ...updates, id: existing.id });
+  const keys = Object.keys(updates);
+  const setClause = keys.map((k, i) => `${k} = $${i + 1}`).join(', ');
+  await db.query(`UPDATE businesses SET ${setClause} WHERE id = $${keys.length + 1}`, [...keys.map((k) => updates[k]), existing.id]);
 
-  const row = getBusinessRow(req.userId);
-  res.json({ business: serializeBusiness(row) });
+  const row = await getBusinessRow(req.userId);
+  res.json({ business: await serializeBusiness(row) });
 });
 
 // Enable/pause a single agent — a paused agent stops being assigned new
 // autonomous tasks (reflected in both Agents and Settings tabs).
-router.patch('/agents/:key', requireAuth, (req, res) => {
-  const existing = getBusinessRow(req.userId);
+router.patch('/agents/:key', requireAuth, async (req, res) => {
+  const existing = await getBusinessRow(req.userId);
   if (!existing) return res.status(404).json({ error: 'No company yet.' });
 
   const key = req.params.key;
@@ -186,15 +186,15 @@ router.patch('/agents/:key', requireAuth, (req, res) => {
   const enabled = !!(req.body && req.body.enabled);
   const agentEnabled = JSON.parse(existing.agent_enabled_json);
   agentEnabled[def.name] = enabled;
-  db.prepare('UPDATE businesses SET agent_enabled_json = ? WHERE id = ?').run(JSON.stringify(agentEnabled), existing.id);
+  await db.query('UPDATE businesses SET agent_enabled_json = $1 WHERE id = $2', [JSON.stringify(agentEnabled), existing.id]);
 
-  const row = getBusinessRow(req.userId);
-  res.json({ business: serializeBusiness(row) });
+  const row = await getBusinessRow(req.userId);
+  res.json({ business: await serializeBusiness(row) });
 });
 
 // Approve or reject a pending item from the agent team.
-router.patch('/approvals/:id', requireAuth, (req, res) => {
-  const existing = getBusinessRow(req.userId);
+router.patch('/approvals/:id', requireAuth, async (req, res) => {
+  const existing = await getBusinessRow(req.userId);
   if (!existing) return res.status(404).json({ error: 'No company yet.' });
 
   const decision = req.body && req.body.decision;
@@ -202,19 +202,23 @@ router.patch('/approvals/:id', requireAuth, (req, res) => {
     return res.status(400).json({ error: 'decision must be "approved" or "rejected".' });
   }
 
-  const approval = db.prepare('SELECT * FROM approvals WHERE id = ? AND business_id = ?').get(req.params.id, existing.id);
+  const approvalId = Number(req.params.id);
+  if (!Number.isInteger(approvalId) || approvalId < 1 || approvalId > 2147483647) {
+    return res.status(404).json({ error: 'Approval not found.' });
+  }
+  const { rows: [approval] } = await db.query('SELECT id FROM approvals WHERE id = $1 AND business_id = $2', [approvalId, existing.id]);
   if (!approval) return res.status(404).json({ error: 'Approval not found.' });
 
-  db.prepare("UPDATE approvals SET status = ?, decided_at = datetime('now') WHERE id = ?").run(decision, approval.id);
+  await db.query('UPDATE approvals SET status = $1, decided_at = now() WHERE id = $2', [decision, approval.id]);
 
-  const row = getBusinessRow(req.userId);
-  res.json({ business: serializeBusiness(row) });
+  const row = await getBusinessRow(req.userId);
+  res.json({ business: await serializeBusiness(row) });
 });
 
-router.delete('/', requireAuth, (req, res) => {
-  const existing = getBusinessRow(req.userId);
+router.delete('/', requireAuth, async (req, res) => {
+  const existing = await getBusinessRow(req.userId);
   if (!existing) return res.status(404).json({ error: 'No company to remove.' });
-  db.prepare('DELETE FROM businesses WHERE id = ?').run(existing.id);
+  await db.query('DELETE FROM businesses WHERE id = $1', [existing.id]);
   res.json({ ok: true });
 });
 

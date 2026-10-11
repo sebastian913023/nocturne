@@ -6,12 +6,14 @@ const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 
 const anthropic = require('./anthropic');
+const db = require('./db');
 const { attachSession } = require('./auth');
 const { scheduleNightly } = require('./nightCycle');
 const authRoutes = require('./routes/auth');
 const businessRoutes = require('./routes/business');
 const chatRoutes = require('./routes/chat');
 const { router: billingRoutes, webhookHandler } = require('./routes/billing');
+const statsRoutes = require('./routes/stats');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -68,17 +70,31 @@ app.use('/api/auth', authRoutes);
 app.use('/api/business', businessRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/billing', billingRoutes);
+app.use('/api/stats', statsRoutes);
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '..', 'public', 'index.html'));
 });
 
-scheduleNightly();
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`◐ Nocturne running on port ${PORT}`);
-  console.log(`   Health:     /health`);
-  console.log(`   Anthropic:  ${anthropic.isConfigured() ? 'configured ✓' : 'MISSING ✗ (fallback data will be used)'}`);
-  console.log(`   Models:     ${anthropic.MODEL_CHAIN.join(' → ')}`);
+// Async route handlers forward rejections here (see asyncRouter.js).
+// eslint-disable-next-line no-unused-vars
+app.use((err, req, res, next) => {
+  console.error('[server] unhandled error:', err.message);
+  res.status(500).json({ error: 'Internal server error' });
 });
+
+db.init()
+  .then(() => {
+    scheduleNightly();
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`◐ Nocturne running on port ${PORT}`);
+      console.log(`   Health:     /health`);
+      console.log(`   Anthropic:  ${anthropic.isConfigured() ? 'configured ✓' : 'MISSING ✗ (fallback data will be used)'}`);
+      console.log(`   Models:     ${anthropic.MODEL_CHAIN.join(' → ')}`);
+    });
+  })
+  .catch((e) => {
+    console.error('Failed to initialize database:', e.message);
+    process.exit(1);
+  });

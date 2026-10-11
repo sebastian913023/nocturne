@@ -33,7 +33,13 @@ function renderMoneyTab(props) {
     ...txRows,
   ]);
 
+  const stage = renderStage('money', {
+    title: 'Revenue flow',
+    hint: 'Pillars show revenue this month, Nocturne\u2019s share, and what you keep.',
+  });
+
   return h('div', { class: 'nc-up' }, [
+    stage,
     h('div', { class: 'money-grid' }, cards),
     txCard,
   ]);

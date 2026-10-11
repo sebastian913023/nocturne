@@ -5,7 +5,7 @@ This is the production implementation of the `Nocturne.dc.html` prototype
 
 ## Stack
 
-- **Backend**: Express + SQLite (`better-sqlite3`), JWT session cookies, Stripe, node-cron.
+- **Backend**: Express + Postgres on Neon (`pg`), JWT session cookies, Stripe, node-cron.
 - **Frontend**: static HTML/CSS/vanilla JS served by the same Express process (`public/`).
 
 ## Setup
@@ -20,6 +20,7 @@ npm start               # http://localhost:3000
 
 | Variable | Purpose | Required to run at all? |
 |---|---|---|
+| `DATABASE_URL` | Neon pooled Postgres connection string (tables are created on first boot) | Yes |
 | `SESSION_SECRET` | Signs the login session cookie | Yes |
 | `ANTHROPIC_API_KEY` | Powers real business-name generation, the nightly report, and the AI co-founder chat | No — falls back to a fixed sample business ("Warmwave") and a canned chat reply if unset |
 | `STRIPE_SECRET_KEY` / `STRIPE_PRICE_ID` / `STRIPE_WEBHOOK_SECRET` | Real $49/mo Checkout + webhook | No — the "Upgrade" button returns a clear error until these are set |
@@ -27,7 +28,7 @@ npm start               # http://localhost:3000
 
 ## What's real vs. simulated
 
-- **Real**: accounts (signup/login), persisted business + chat history (SQLite), the Anthropic-backed business
+- **Real**: accounts (signup/login), persisted business + chat history (Postgres), the Anthropic-backed business
   generation and co-founder chat, the nightly agent-cycle cron job (`server/nightCycle.js`, runs at 03:00 server
   time and also triggerable on demand via `POST /api/business/cycle`), and Stripe Checkout for the flat $49/mo seat.
 - **Simulated**: the dashboard's traffic/ad/revenue numbers. Nocturne doesn't actually deploy the generated
@@ -51,10 +52,11 @@ context — it just doesn't yet stop a *real* external action (see "What's real 
 no real ad spend or outreach happening to pause in the first place).
 
 The v2 bundle's own README recommends Next.js/Postgres/Vercel as a default for teams starting from scratch;
-this implementation intentionally stayed on the already-chosen Express/SQLite/vanilla-JS stack instead of
+this implementation intentionally stayed on the already-chosen Express/vanilla-JS stack instead of
 migrating mid-project.
 
 ## Notes
 
-- `data/nocturne.sqlite` is created on first run and is git-ignored.
+- Tables are created automatically on first boot (`CREATE TABLE IF NOT EXISTS`); there is no separate migration step.
+- `.env` holds `DATABASE_URL` and is git-ignored — never commit it.
 - One business per account, matching the original single-company prototype.
