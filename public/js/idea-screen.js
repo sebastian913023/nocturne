@@ -10,14 +10,24 @@ function shortLabel(label) {
 }
 
 // props: { idea, isAuthed, submitting, error, onIdeaChange, onBuild, onSignIn, onSignOut }
+// Shown only once there are enough real companies for the number to mean
+// something; below this the badge stays hidden rather than advertising a
+// small or invented figure.
+const MIN_PUBLIC_COUNT = 10;
+let _publicCompanies = null;
+
+function paintCompanyCount(root) {
+  const badge = root.querySelector('[data-live-badge]');
+  const el = root.querySelector('[data-live-count]');
+  if (!badge || !el || _publicCompanies == null || _publicCompanies < MIN_PUBLIC_COUNT) return;
+  el.textContent = _publicCompanies.toLocaleString() + ' companies built on Nocturne';
+  badge.hidden = false;
+}
+
 function renderIdeaScreen(root, props) {
-  let liveCount = 1173;
-  const tickTimer = setInterval(() => {
-    liveCount = 1173 + Math.floor(Math.random() * 7);
-    const el = root.querySelector('[data-live-count]');
-    if (el) el.textContent = liveCount.toLocaleString() + ' companies running autonomously right now';
-  }, 3000);
-  root._ideaCleanup = () => clearInterval(tickTimer);
+  if (_publicCompanies == null) {
+    Api.publicStats().then((s) => { _publicCompanies = Number(s.companies) || 0; paintCompanyCount(root); }).catch(() => {});
+  }
 
   const stars = [
     { top: '12%', left: '16%', size: 3, color: '#E8B060', delay: '0s', dur: '3.5s' },
@@ -35,9 +45,9 @@ function renderIdeaScreen(root, props) {
     h('header', { class: 'idea-header' }, [
       h('div', { class: 'idea-brand' }, [h('div', { class: 'orb' }), h('span', {}, 'NOCTURNE')]),
       h('div', { class: 'idea-nav' }, [
-        h('span', {}, 'How it works'),
-        h('span', {}, 'Live'),
-        h('span', {}, 'Pricing'),
+        h('button', { class: 'idea-nav__link', type: 'button', onClick: openHowItWorksSheet }, 'How it works'),
+        h('a', { class: 'idea-nav__link', href: '/pitch-deck.html' }, 'Pitch'),
+        h('button', { class: 'idea-nav__link', type: 'button', onClick: openPricingSheet }, 'Pricing'),
         props.isAuthed
           ? h('button', { class: 'idea-signout', onClick: props.onSignOut }, 'Sign out')
           : h('button', { class: 'idea-signin', onClick: props.onSignIn }, 'Sign in'),
@@ -45,9 +55,9 @@ function renderIdeaScreen(root, props) {
     ]),
 
     h('main', { class: 'idea-main' }, [
-      h('div', { class: 'idea-badge nc-up' }, [
+      h('div', { class: 'idea-badge nc-up', 'data-live-badge': true, hidden: true }, [
         h('span', { class: 'dot nc-pulse' }),
-        h('span', { class: 'mono', 'data-live-count': true }, liveCount.toLocaleString() + ' companies running autonomously right now'),
+        h('span', { class: 'mono', 'data-live-count': true }),
       ]),
       h('h1', { class: 'idea-title nc-up' }, [
         'Describe a business tonight.', h('br'), h('em', {}, 'Wake up to a company.'),
@@ -89,4 +99,5 @@ function renderIdeaScreen(root, props) {
   ]);
 
   mount(root, page);
+  paintCompanyCount(root);
 }

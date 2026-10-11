@@ -18,16 +18,34 @@
     chatSending: false,
     chatInput: '',
     planStatus: 'free',
+    cycleRunning: false,
+    upgrading: false,
   };
 
   let buildTimer = null;
 
   function cleanupScreen() {
-    if (root._ideaCleanup) { root._ideaCleanup(); root._ideaCleanup = null; }
     if (root._appCountdownTimer) { clearInterval(root._appCountdownTimer); root._appCountdownTimer = null; }
   }
 
+  const STAGE_TABS = new Set(['overview', 'agents', 'growth', 'money', 'approvals']);
+
+  function syncScene() {
+    if (!window.Scene3D) return;
+    const s = state.screen;
+    if (s === 'idea') Scene3D.show('landing');
+    else if (s === 'building') Scene3D.show('ambient', { progress: Math.min(1, state.buildStep / 7) });
+    else if (s === 'loading' || s === 'auth') Scene3D.show('ambient', { progress: 0 });
+    else if (s === 'app' && STAGE_TABS.has(state.tab) && state.business) Scene3D.show(state.tab, state.business);
+    else Scene3D.show(null);
+  }
+
   function render() {
+    renderScreen();
+    syncScene();
+  }
+
+  function renderScreen() {
     cleanupScreen();
     if (state.screen === 'loading') {
       mount(root, h('div', { class: 'auth-page' }, h('div', { class: 'auth-logo' }, [h('div', { class: 'orb' }), h('span', {}, 'NOCTURNE')])));
@@ -61,10 +79,14 @@
         chatInput: state.chatInput,
         chatSending: state.chatSending,
         planStatus: state.planStatus,
+        cycleRunning: state.cycleRunning,
+        upgrading: state.upgrading,
         userEmail: state.user && state.user.email,
         onTabChange: (id) => { state.tab = id; render(); },
         onToggleChat: () => { state.chatOpen = !state.chatOpen; render(); },
-        onVisitSite: () => window.open(`https://${state.business.domain}`, '_blank', 'noopener'),
+        onVisitSite: () => openSiteSheet(state.business),
+        onOpenCompany: () => openCompanySheet(state.business),
+        onRunCycle: runCycle,
         onSignOut: handleSignOut,
         onChatInput: (v) => { state.chatInput = v; },
         onChatKeyDown: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } },
@@ -87,12 +109,37 @@
     Api.updateSettings(partial).then((data) => { state.business = data.business; render(); }).catch(reportBusinessError);
   }
 
+  const decidingApprovals = new Set();
+
   function decideApproval(id, decision) {
-    Api.decideApproval(id, decision).then((data) => { state.business = data.business; render(); }).catch(reportBusinessError);
+    if (decidingApprovals.has(id)) return;
+    decidingApprovals.add(id);
+    Api.decideApproval(id, decision)
+      .then((data) => {
+        state.business = data.business;
+        render();
+        Overlay.toast(decision === 'approved' ? 'Approved — your agents will proceed.' : 'Rejected — nothing will be done.', { tone: 'success', ms: 3000 });
+      })
+      .catch(reportBusinessError)
+      .finally(() => decidingApprovals.delete(id));
+  }
+
+  function runCycle() {
+    if (state.cycleRunning) return;
+    state.cycleRunning = true;
+    render();
+    Api.runCycle()
+      .then((data) => {
+        state.business = data.business;
+        state.activity = data.activity || [];
+        Overlay.toast('Night cycle complete — your morning report is updated.', { tone: 'success' });
+      })
+      .catch(reportBusinessError)
+      .finally(() => { state.cycleRunning = false; render(); });
   }
 
   function reportBusinessError(err) {
-    alert(err.message || 'Something went wrong. Please try again.');
+    Overlay.toast((err && err.message) || 'Something went wrong. Please try again.', { tone: 'error' });
   }
 
   function handleSignOut() {
@@ -246,10 +293,20 @@
   }
 
   function handleUpgrade() {
+    if (state.upgrading) return;
+    state.upgrading = true;
+    render();
     Api.createCheckoutSession()
       .then((data) => { window.location.href = data.url; })
       .catch((err) => {
-        alert(err.message || 'Billing is not configured on this server yet.');
+        state.upgrading = false;
+        render();
+        // 503 means billing isn't configured server-side; don't surface env var names to customers.
+        if (err && err.status === 503) {
+          Overlay.toast('Upgrades are not available right now. Please try again soon.', { tone: 'error' });
+        } else {
+          reportBusinessError(err);
+        }
       });
   }
 

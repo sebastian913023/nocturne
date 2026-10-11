@@ -13,6 +13,7 @@ const authRoutes = require('./routes/auth');
 const businessRoutes = require('./routes/business');
 const chatRoutes = require('./routes/chat');
 const { router: billingRoutes, webhookHandler } = require('./routes/billing');
+const statsRoutes = require('./routes/stats');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -69,6 +70,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/business', businessRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/billing', billingRoutes);
+app.use('/api/stats', statsRoutes);
 
 app.use(express.static(path.join(__dirname, '..', 'public')));
 app.get('*', (req, res) => {

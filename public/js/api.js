@@ -36,6 +36,8 @@ const Api = (() => {
     getChat: () => request('GET', '/api/chat'),
     sendChat: (text) => request('POST', '/api/chat', { text }),
 
+    publicStats: () => request('GET', '/api/stats'),
+
     billingStatus: () => request('GET', '/api/billing/status'),
     createCheckoutSession: () => request('POST', '/api/billing/create-checkout-session'),
   };
