@@ -19,24 +19,22 @@ for how the app itself works and what's real vs. simulated.
 1. **Create the Railway project.** Railway dashboard → New Project →
    Deploy from GitHub repo → select this repo and branch.
 2. **Build:** Railway auto-detects Node via Nixpacks and runs
-   `npm install` (this installs `better-sqlite3`, which compiles a native
-   module — Nixpacks includes the build toolchain needed for this, no
-   extra config required).
+   `npm install` (pure-JS dependencies only — no native build step).
 3. **Start command:** `npm start` (already set in `railway.json` /
    `package.json`).
-4. **Add a persistent volume.** The app stores its SQLite database at
-   `data/nocturne.sqlite` (relative to the repo root, see `server/db.js`).
-   Railway's container filesystem does **not** persist across redeploys
-   without a volume. In the Railway dashboard: service → **Volumes** → add
-   a volume mounted at `/app/data`. Without this, every redeploy wipes all
-   accounts, businesses, and chat history.
+4. **Connect the database.** The app stores everything in Postgres (Neon).
+   Copy the **pooled** connection string from the Neon dashboard
+   (Connect → Pooled connection) and set it as `DATABASE_URL` in step 5.
+   Tables are created automatically on first boot (`server/db.js`), and no
+   volume is needed — data lives in Neon, so redeploys never wipe it.
 5. **Set environment variables** (Railway dashboard → service →
-   Variables). None are required for the server to boot, but most real
-   functionality depends on them — see the table in `RUNNING.md` for what
-   each one unlocks:
+   Variables). `DATABASE_URL` and `SESSION_SECRET` are required for the
+   server to boot; the rest unlock features — see the table in `RUNNING.md`
+   for what each one does:
 
    | Variable | Required for |
    |---|---|
+   | `DATABASE_URL` | **Required.** Neon pooled Postgres connection string |
    | `SESSION_SECRET` | Login sessions to work at all — set this even for a demo deploy |
    | `ANTHROPIC_API_KEY` | Real AI business generation + co-founder chat (falls back to a fixed sample otherwise) |
    | `STRIPE_SECRET_KEY`, `STRIPE_PRICE_ID`, `STRIPE_WEBHOOK_SECRET` | Real $49/mo Checkout |

@@ -105,25 +105,30 @@ async function runCycleForBusiness(business) {
   const report = (await tryGenerateReport(business, deltas)) || fallbackReport(business, deltas);
   const reportDate = new Date().toISOString().slice(0, 10);
 
-  db.prepare(`
-    UPDATE businesses SET metrics_json = ?, money_json = ?, transactions_json = ?, report_json = ?, report_date = ?
-    WHERE id = ?
-  `).run(JSON.stringify(newMetrics), JSON.stringify(newMoney), JSON.stringify(newTransactions), JSON.stringify(report), reportDate, business.id);
+  await db.tx(async (client) => {
+    await client.query(
+      'UPDATE businesses SET metrics_json = $1, money_json = $2, transactions_json = $3, report_json = $4, report_date = $5 WHERE id = $6',
+      [JSON.stringify(newMetrics), JSON.stringify(newMoney), JSON.stringify(newTransactions), JSON.stringify(report), reportDate, business.id]
+    );
 
-  const insertActivity = db.prepare('INSERT INTO activity_log (business_id, time_label, agent, color, text) VALUES (?, ?, ?, ?, ?)');
-  let hour = 3, minute = 0;
-  for (const make of TEMPLATE_ACTIVITY) {
-    const entry = make(business);
-    insertActivity.run(business.id, timeLabel(hour, minute), entry.agent, AGENT_COLOR[entry.agent] || '#9AA0A9', entry.text);
-    minute += rand(4, 20);
-    if (minute >= 60) { hour += 1; minute -= 60; }
-  }
+    let hour = 3, minute = 0;
+    for (const make of TEMPLATE_ACTIVITY) {
+      const entry = make(business);
+      await client.query(
+        'INSERT INTO activity_log (business_id, time_label, agent, color, text) VALUES ($1, $2, $3, $4, $5)',
+        [business.id, timeLabel(hour, minute), entry.agent, AGENT_COLOR[entry.agent] || '#9AA0A9', entry.text]
+      );
+      minute += rand(4, 20);
+      if (minute >= 60) { hour += 1; minute -= 60; }
+    }
+  });
 
-  return db.prepare('SELECT * FROM businesses WHERE id = ?').get(business.id);
+  const { rows: [updated] } = await db.query('SELECT * FROM businesses WHERE id = $1', [business.id]);
+  return updated;
 }
 
 async function runCycleForAllBusinesses() {
-  const rows = db.prepare('SELECT * FROM businesses').all();
+  const { rows } = await db.query('SELECT * FROM businesses');
   for (const row of rows) {
     try {
       await runCycleForBusiness(row);

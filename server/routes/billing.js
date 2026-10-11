@@ -1,8 +1,8 @@
-const express = require('express');
 const db = require('../db');
+const { asyncRouter } = require('../asyncRouter');
 const { requireAuth } = require('../auth');
 
-const router = express.Router();
+const router = asyncRouter();
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY || '';
 const STRIPE_PRICE_ID = process.env.STRIPE_PRICE_ID || '';
@@ -10,12 +10,13 @@ const APP_URL = process.env.APP_URL || 'http://localhost:3000';
 
 const stripe = STRIPE_SECRET_KEY ? require('stripe')(STRIPE_SECRET_KEY) : null;
 
-function getBusiness(userId) {
-  return db.prepare('SELECT * FROM businesses WHERE user_id = ?').get(userId);
+async function getBusiness(userId) {
+  const { rows: [business] } = await db.query('SELECT * FROM businesses WHERE user_id = $1', [userId]);
+  return business;
 }
 
-router.get('/status', requireAuth, (req, res) => {
-  const business = getBusiness(req.userId);
+router.get('/status', requireAuth, async (req, res) => {
+  const business = await getBusiness(req.userId);
   res.json({
     configured: !!stripe && !!STRIPE_PRICE_ID,
     planStatus: business ? business.plan_status : 'free',
@@ -26,10 +27,10 @@ router.post('/create-checkout-session', requireAuth, async (req, res) => {
   if (!stripe || !STRIPE_PRICE_ID) {
     return res.status(503).json({ error: 'Billing is not configured on this server yet. Set STRIPE_SECRET_KEY and STRIPE_PRICE_ID.' });
   }
-  const business = getBusiness(req.userId);
+  const business = await getBusiness(req.userId);
   if (!business) return res.status(404).json({ error: 'Build your company before upgrading.' });
 
-  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.userId);
+  const { rows: [user] } = await db.query('SELECT * FROM users WHERE id = $1', [req.userId]);
 
   try {
     const session = await stripe.checkout.sessions.create({
@@ -77,12 +78,14 @@ async function webhookHandler(req, res) {
       const session = event.data.object;
       const userId = parseInt(session.client_reference_id, 10);
       if (userId) {
-        db.prepare('UPDATE businesses SET plan_status = ?, stripe_customer_id = ?, stripe_subscription_id = ? WHERE user_id = ?')
-          .run('active', session.customer, session.subscription, userId);
+        await db.query(
+          'UPDATE businesses SET plan_status = $1, stripe_customer_id = $2, stripe_subscription_id = $3 WHERE user_id = $4',
+          ['active', session.customer, session.subscription, userId]
+        );
       }
     } else if (event.type === 'customer.subscription.deleted') {
       const sub = event.data.object;
-      db.prepare('UPDATE businesses SET plan_status = ? WHERE stripe_subscription_id = ?').run('free', sub.id);
+      await db.query('UPDATE businesses SET plan_status = $1 WHERE stripe_subscription_id = $2', ['free', sub.id]);
     }
   } catch (e) {
     console.error('[billing webhook] handling error:', e.message);

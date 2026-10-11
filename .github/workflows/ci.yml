@@ -9,6 +9,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: nocturne
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
     steps:
       - uses: actions/checkout@v4
 
@@ -25,6 +38,7 @@ jobs:
           cp .env.example .env
           SECRET=$(node -e "console.log(require('crypto').randomBytes(32).toString('hex'))")
           sed -i "s/SESSION_SECRET=change-me-to-a-long-random-string/SESSION_SECRET=$SECRET/" .env
+          sed -i "s|^DATABASE_URL=.*|DATABASE_URL=postgresql://postgres:postgres@localhost:5432/nocturne|" .env
 
       - name: Run scripts/test.sh
         run: bash scripts/test.sh

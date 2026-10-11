@@ -1,9 +1,9 @@
-const express = require('express');
 const bcrypt = require('bcryptjs');
 const db = require('../db');
+const { asyncRouter } = require('../asyncRouter');
 const { setSessionCookie, clearSessionCookie, requireAuth } = require('../auth');
 
-const router = express.Router();
+const router = asyncRouter();
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -20,16 +20,16 @@ router.post('/signup', async (req, res) => {
     return res.status(400).json({ error: 'Password must be at least 8 characters' });
   }
   const normalizedEmail = email.trim().toLowerCase();
-  const existing = db.prepare('SELECT id FROM users WHERE email = ?').get(normalizedEmail);
-  if (existing) {
+  const passwordHash = await bcrypt.hash(password, 12);
+  const { rows: [created] } = await db.query(
+    'INSERT INTO users (email, password_hash) VALUES ($1, $2) ON CONFLICT (email) DO NOTHING RETURNING id',
+    [normalizedEmail, passwordHash]
+  );
+  if (!created) {
     return res.status(409).json({ error: 'An account with that email already exists' });
   }
-  const passwordHash = await bcrypt.hash(password, 12);
-  const info = db
-    .prepare('INSERT INTO users (email, password_hash) VALUES (?, ?)')
-    .run(normalizedEmail, passwordHash);
-  setSessionCookie(res, info.lastInsertRowid);
-  res.status(201).json({ user: { id: info.lastInsertRowid, email: normalizedEmail } });
+  setSessionCookie(res, created.id);
+  res.status(201).json({ user: { id: created.id, email: normalizedEmail } });
 });
 
 router.post('/login', async (req, res) => {
@@ -38,7 +38,7 @@ router.post('/login', async (req, res) => {
     return res.status(400).json({ error: 'Email and password are required' });
   }
   const normalizedEmail = email.trim().toLowerCase();
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(normalizedEmail);
+  const { rows: [user] } = await db.query('SELECT * FROM users WHERE email = $1', [normalizedEmail]);
   if (!user) return res.status(401).json({ error: 'Invalid email or password' });
   const ok = await bcrypt.compare(password, user.password_hash);
   if (!ok) return res.status(401).json({ error: 'Invalid email or password' });
@@ -51,8 +51,8 @@ router.post('/logout', (req, res) => {
   res.json({ ok: true });
 });
 
-router.get('/me', requireAuth, (req, res) => {
-  const user = db.prepare('SELECT id, email FROM users WHERE id = ?').get(req.userId);
+router.get('/me', requireAuth, async (req, res) => {
+  const { rows: [user] } = await db.query('SELECT id, email FROM users WHERE id = $1', [req.userId]);
   if (!user) return res.status(401).json({ error: 'Not signed in' });
   res.json({ user });
 });
