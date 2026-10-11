@@ -37,7 +37,10 @@ function renderAppScreen(root, props) {
 
   const sidebar = h('aside', { class: 'sidebar' }, [
     h('div', { class: 'sidebar-logo' }, [h('div', { class: 'orb' }), h('span', {}, 'NOCTURNE')]),
-    h('div', { class: 'active-company-card' }, [
+    h('button', {
+      class: 'active-company-card active-company-card--button', type: 'button',
+      'aria-haspopup': 'dialog', onClick: props.onOpenCompany,
+    }, [
       h('div', { class: 'kicker' }, 'ACTIVE COMPANY'),
       h('div', { class: 'row' }, [h('span', { class: 'name' }, b.name), h('span', { class: 'chev' }, '⌄')]),
     ]),
@@ -46,6 +49,9 @@ function renderAppScreen(root, props) {
       h('div', { class: 'head' }, [h('span', { class: 'dot nc-pulse' }), 'NEXT NIGHT CYCLE']),
       h('div', { class: 'countdown', 'data-countdown': true }, computeCountdown()),
       h('div', { class: 'note' }, '1 autonomous task included tonight'),
+      h('button', {
+        class: 'cycle-card__run', type: 'button', disabled: props.cycleRunning, onClick: props.onRunCycle,
+      }, props.cycleRunning ? 'Running cycle…' : 'Run cycle now'),
     ]),
     h('div', { class: 'user-row' }, [
       h('div', { class: 'avatar' }, (props.userEmail || 'Y')[0].toUpperCase()),
@@ -83,7 +89,7 @@ function renderAppScreen(root, props) {
       ]),
       h('div', { class: 'topbar-actions' }, [
         b.pendingCount > 0 ? h('button', { class: 'pending-pill', onClick: goApprovals }, `◎ ${b.pendingCount} awaiting your OK`) : null,
-        props.planStatus !== 'active' ? h('button', { class: 'btn-ghost', onClick: props.onUpgrade }, 'Upgrade') : null,
+        props.planStatus !== 'active' ? h('button', { class: 'btn-ghost', disabled: props.upgrading, onClick: props.onUpgrade }, props.upgrading ? 'Opening checkout…' : 'Upgrade') : null,
         h('button', { class: 'btn-ghost', onClick: props.onVisitSite }, 'Visit site ↗'),
         h('button', { class: 'btn-amber', onClick: props.onToggleChat }, '◐ Ask your co-founder'),
       ]),

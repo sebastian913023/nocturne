@@ -26,16 +26,31 @@ function renderGrowthTab(props) {
     h('div', { class: 'campaign-list' }, campaignRows),
   ]);
 
-  const cta = h('div', { class: 'growth-cta' }, [
-    h('div', { class: 'growth-cta-icon' }, '✎'),
-    h('div', { style: 'flex:1' }, [
-      h('div', { class: 'growth-cta-title' }, 'Marketer drafted 3 new ad creatives overnight'),
-      h('div', { class: 'growth-cta-sub' }, 'Waiting on your approval before spend begins. Est. daily budget $18.'),
-    ]),
-    h('button', { class: 'btn-blue', onClick: props.onGoApprovals }, 'Review'),
-  ]);
+  const waiting = b.approvals.find((a) => a.status === 'pending' && a.kind === 'Spend');
+  const cta = waiting
+    ? h('div', { class: 'growth-cta' }, [
+      h('div', { class: 'growth-cta-icon' }, '✎'),
+      h('div', { style: 'flex:1' }, [
+        h('div', { class: 'growth-cta-title' }, waiting.title),
+        h('div', { class: 'growth-cta-sub' }, `${waiting.owner} is waiting on your approval before spend begins${waiting.amount ? ` (${waiting.amount})` : ''}.`),
+      ]),
+      h('button', { class: 'btn-blue', type: 'button', onClick: props.onGoApprovals }, 'Review'),
+    ])
+    : h('div', { class: 'growth-cta growth-cta--idle' }, [
+      h('div', { class: 'growth-cta-icon' }, '✓'),
+      h('div', { style: 'flex:1' }, [
+        h('div', { class: 'growth-cta-title' }, 'No ad spend is waiting on you'),
+        h('div', { class: 'growth-cta-sub' }, 'New spend requests from your marketer will appear here and in Approvals.'),
+      ]),
+    ]);
+
+  const stage = renderStage('growth', {
+    title: 'Acquisition funnel',
+    hint: 'Each tier is one step of your funnel; its width follows the share of visitors who reach it.',
+  });
 
   return h('div', { class: 'nc-up' }, [
+    stage,
     h('div', { class: 'growth-grid' }, [funnelCard, campaignsCard]),
     cta,
   ]);

@@ -59,5 +59,10 @@ function renderApprovalsTab(props) {
     ]))),
   ];
 
-  return h('div', { class: 'nc-up' }, [autonomyCard, ...pendingSection, ...decidedSection]);
+  const stage = renderStage('approvals', {
+    title: 'Approval queue',
+    hint: 'Amber cards are waiting on you, green are approved, red are rejected. Decide below and watch the card move.',
+  });
+
+  return h('div', { class: 'nc-up' }, [stage, autonomyCard, ...pendingSection, ...decidedSection]);
 }
