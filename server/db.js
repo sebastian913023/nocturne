@@ -4,7 +4,10 @@ if (!process.env.DATABASE_URL) {
   throw new Error('DATABASE_URL must be set (see .env.example)');
 }
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: 10 });
+// Vercel runs many short-lived function instances concurrently, each with
+// its own pool, vs. Railway's single long-lived process — cap it lower
+// there so instances don't collectively exhaust Neon's connection limit.
+const pool = new Pool({ connectionString: process.env.DATABASE_URL, max: process.env.VERCEL ? 3 : 10 });
 
 // An idle client being dropped (Neon scale-to-zero, network blip) must not
 // crash the process; the pool replaces it on next use.
