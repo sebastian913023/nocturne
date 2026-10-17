@@ -19,6 +19,10 @@ const app = express();
 const RATE_LIMIT_RPM = parseInt(process.env.RATE_LIMIT_RPM || '60', 10);
 
 app.disable('x-powered-by');
+// Both Railway and Vercel put one reverse proxy in front of this app, which
+// sets X-Forwarded-For; without this, express-rate-limit can't tell clients
+// apart (see https://express-rate-limit.github.io/ERR_ERL_UNEXPECTED_X_FORWARDED_FOR/).
+app.set('trust proxy', 1);
 
 // Security headers.
 app.use((req, res, next) => {
